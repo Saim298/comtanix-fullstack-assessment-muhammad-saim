@@ -35,4 +35,10 @@ return [
         ],
     ],
 
+    'audit' => [
+        'url' => env('AUDIT_SERVICE_URL', 'http://127.0.0.1:4001'),
+        'shared_secret' => env('AUDIT_SHARED_SECRET'),
+        'read_token' => env('AUDIT_READ_TOKEN'),
+    ],
+
 ];

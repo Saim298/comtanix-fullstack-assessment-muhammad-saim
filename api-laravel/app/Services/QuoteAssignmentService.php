@@ -9,6 +9,11 @@ use Illuminate\Support\Facades\Gate;
 
 class QuoteAssignmentService
 {
+    public function __construct(
+        private readonly AuditEventPublisher $audit
+    ) {
+    }
+
     public function assign(
         QuoteRequest $quoteRequest,
         User $actor,
@@ -21,8 +26,22 @@ class QuoteAssignmentService
 
             Gate::forUser($actor)->authorize('assign', $quote);
 
-            $quote->assigned_user_id = $staffId;
-            $quote->save();
+            $previousAssigneeId = $quote->assigned_user_id;
+
+            if ($previousAssigneeId !== $staffId) {
+                $quote->assigned_user_id = $staffId;
+                $quote->save();
+
+                $this->audit->publish(
+                    'quote.assigned',
+                    $quote,
+                    $actor,
+                    [
+                        'oldAssignedUserId' => $previousAssigneeId,
+                        'newAssignedUserId' => $staffId
+                    ]
+                );
+            }
 
             return $quote->load('assignedUser:id,name,email');
         });

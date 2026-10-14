@@ -17,6 +17,11 @@ class QuoteStatusService
         'closed' => [],
     ];
 
+    public function __construct(
+        private readonly AuditEventPublisher $audit
+    ) {
+    }
+
     public function transition(
         QuoteRequest $quoteRequest,
         User $actor,
@@ -29,18 +34,30 @@ class QuoteStatusService
 
             Gate::forUser($actor)->authorize('updateStatus', $quote);
 
-            $allowed = self::TRANSITIONS[$quote->status] ?? [];
+            $previousStatus = $quote->status;
+
+            $allowed = self::TRANSITIONS[$previousStatus] ?? [];
 
             if (!in_array($newStatus, $allowed, true)) {
                 throw ValidationException::withMessages([
                     'status' => [
-                        "Cannot transition from {$quote->status} to {$newStatus}.",
-                    ],
+                        "Cannot transition from {$previousStatus} to {$newStatus}."
+                    ]
                 ]);
             }
 
             $quote->status = $newStatus;
             $quote->save();
+
+            $this->audit->publish(
+                'quote.status_changed',
+                $quote,
+                $actor,
+                [
+                    'oldStatus' => $previousStatus,
+                    'newStatus' => $newStatus
+                ]
+            );
 
             return $quote->load('assignedUser:id,name,email');
         });

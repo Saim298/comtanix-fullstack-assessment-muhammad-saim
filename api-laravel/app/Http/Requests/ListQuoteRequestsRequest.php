@@ -29,8 +29,10 @@ class ListQuoteRequestsRequest extends FormRequest
                 'sometimes',
                 'nullable',
                 'integer',
+                'prohibited_if:unassigned,1',
                 'exists:users,id'
             ],
+            'unassigned' => ['sometimes', 'boolean'],
             'service_type' => [
                 'sometimes',
                 'nullable',

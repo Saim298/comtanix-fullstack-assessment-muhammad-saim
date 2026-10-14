@@ -1,0 +1,3648 @@
+{
+  "info": {
+    "_postman_id": "c5bf3b2a-8131-4c96-9c91-82f013cfc2eb",
+    "name": "Comtanix Quote Request Manager - Technical Review",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "description": "Source-aligned Laravel and Node audit requests with four fictional client briefs. Import the accompanying environment and configure local secrets. Run folders in order. ALL saved responses are illustrative and NOT verified against a running API. Sample IDs 201-204 and 1/2/3, timestamps, UUIDs, counts, and pagination URLs are examples only. Real IDs and tokens are captured from successful responses. Client addresses use test.com; seeded logins preserve comtanix.test to match StaffUserSeeder. All secret variables are blank. Documentation generation and local validation do not modify database records or seeders. Sending the workflow creates four quotes, issues tokens, and manages Saim's captured quote. Direct audit writes and deletion are skipped by default. See docs/postman/README.md for setup, validation, roles, and verification scope."
+  },
+  "auth": {
+    "type": "noauth"
+  },
+  "item": [
+    {
+      "name": "01 - Public client inquiries",
+      "description": "Four fictional, valid client briefs. Sending creates four new records. test.com addresses are fictional placeholders; these endpoints do not send email.",
+      "item": [
+        {
+          "name": "Submit Saim Arifeen - Web Development",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "auth": {
+              "type": "noauth"
+            },
+            "url": "{{laravel_base_url}}/public/quote-requests",
+            "description": "Fictional Web Development brief. Creates a new quote and queues quote.created. Captures saim_quote_id from the response. Saim supplies quote_request_id for all management requests. Public submissions are limited to five per minute per IP.\n\nAll saved responses are illustrative, derived from source code, and have not been verified against a running API.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"client_name\": \"Saim Arifeen\",\n  \"email\": \"saim.arifeen@test.com\",\n  \"company\": \"Saim Digital Solutions\",\n  \"service_type\": \"Web Development\",\n  \"budget_range\": \"1000_5000\",\n  \"message\": \"I run a small online business and need a modern, responsive website where customers can explore our services, submit inquiries, and contact our team. The website should load quickly, work well on mobile devices, and include a simple administration area.\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.environment.unset('saim_quote_id');",
+                  "pm.environment.unset('quote_request_id');"
+                ]
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('HTTP 201', () => pm.response.to.have.status(201));",
+                  "if (pm.response.code === 201) {",
+                  "    const data = pm.response.json().data;",
+                  "    pm.test('New unassigned client inquiry', () => {",
+                  "        pm.expect(data.id).to.be.a('number').above(0);",
+                  "        pm.expect(data.status).to.eql('new');",
+                  "        pm.expect(data.assigned_user_id).to.eql(null);",
+                  "        pm.expect(data.client_name).to.eql(\"Saim Arifeen\");",
+                  "    });",
+                  "    pm.environment.set('saim_quote_id', data.id);",
+                  "    pm.environment.set('quote_request_id', data.id);",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "response": [
+            {
+              "name": "Illustrative - not API verified - Success",
+              "originalRequest": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "auth": {
+                  "type": "noauth"
+                },
+                "url": "{{laravel_base_url}}/public/quote-requests",
+                "description": "Fictional Web Development brief. Creates a new quote and queues quote.created. Captures saim_quote_id from the response. Saim supplies quote_request_id for all management requests. Public submissions are limited to five per minute per IP.\n\nAll saved responses are illustrative, derived from source code, and have not been verified against a running API.",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"client_name\": \"Saim Arifeen\",\n  \"email\": \"saim.arifeen@test.com\",\n  \"company\": \"Saim Digital Solutions\",\n  \"service_type\": \"Web Development\",\n  \"budget_range\": \"1000_5000\",\n  \"message\": \"I run a small online business and need a modern, responsive website where customers can explore our services, submit inquiries, and contact our team. The website should load quickly, work well on mobile devices, and include a simple administration area.\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "Created",
+              "code": 201,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"data\": {\n    \"id\": 201,\n    \"client_name\": \"Saim Arifeen\",\n    \"email\": \"saim.arifeen@test.com\",\n    \"company\": \"Saim Digital Solutions\",\n    \"service_type\": \"Web Development\",\n    \"budget_range\": \"1000_5000\",\n    \"message\": \"I run a small online business and need a modern, responsive website where customers can explore our services, submit inquiries, and contact our team. The website should load quickly, work well on mobile devices, and include a simple administration area.\",\n    \"status\": \"new\",\n    \"assigned_user_id\": null,\n    \"created_at\": \"2026-10-14T09:00:00.000000Z\",\n    \"updated_at\": \"2026-10-14T09:00:00.000000Z\"\n  }\n}"
+            },
+            {
+              "name": "Illustrative - not API verified - Public rate limit",
+              "originalRequest": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "auth": {
+                  "type": "noauth"
+                },
+                "url": "{{laravel_base_url}}/public/quote-requests",
+                "description": "Fictional Web Development brief. Creates a new quote and queues quote.created. Captures saim_quote_id from the response. Saim supplies quote_request_id for all management requests. Public submissions are limited to five per minute per IP.\n\nAll saved responses are illustrative, derived from source code, and have not been verified against a running API.",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"client_name\": \"Saim Arifeen\",\n  \"email\": \"saim.arifeen@test.com\",\n  \"company\": \"Saim Digital Solutions\",\n  \"service_type\": \"Web Development\",\n  \"budget_range\": \"1000_5000\",\n  \"message\": \"I run a small online business and need a modern, responsive website where customers can explore our services, submit inquiries, and contact our team. The website should load quickly, work well on mobile devices, and include a simple administration area.\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "Too Many Requests",
+              "code": 429,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"message\": \"Too many requests. Please try again later.\"\n}"
+            }
+          ]
+        },
+        {
+          "name": "Submit Ayesha Khan - E-commerce Development",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "auth": {
+              "type": "noauth"
+            },
+            "url": "{{laravel_base_url}}/public/quote-requests",
+            "description": "Fictional E-commerce Development brief. Creates a new quote and queues quote.created. Captures ayesha_quote_id from the response. Public submissions are limited to five per minute per IP.\n\nAll saved responses are illustrative, derived from source code, and have not been verified against a running API.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"client_name\": \"Ayesha Khan\",\n  \"email\": \"ayesha.khan@test.com\",\n  \"company\": \"Ayesha Artisan Boutique\",\n  \"service_type\": \"E-commerce Development\",\n  \"budget_range\": \"5000_10000\",\n  \"message\": \"We sell handmade clothing and accessories and need an e-commerce website with product categories, size and color options, secure checkout, inventory tracking, and order notifications. Our team needs an administration area to update products and manage orders, and customers should have a smooth shopping experience on mobile devices.\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.environment.unset('ayesha_quote_id');"
+                ]
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('HTTP 201', () => pm.response.to.have.status(201));",
+                  "if (pm.response.code === 201) {",
+                  "    const data = pm.response.json().data;",
+                  "    pm.test('New unassigned client inquiry', () => {",
+                  "        pm.expect(data.id).to.be.a('number').above(0);",
+                  "        pm.expect(data.status).to.eql('new');",
+                  "        pm.expect(data.assigned_user_id).to.eql(null);",
+                  "        pm.expect(data.client_name).to.eql(\"Ayesha Khan\");",
+                  "    });",
+                  "    pm.environment.set('ayesha_quote_id', data.id);",
+                  "    ",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "response": [
+            {
+              "name": "Illustrative - not API verified - Success",
+              "originalRequest": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "auth": {
+                  "type": "noauth"
+                },
+                "url": "{{laravel_base_url}}/public/quote-requests",
+                "description": "Fictional E-commerce Development brief. Creates a new quote and queues quote.created. Captures ayesha_quote_id from the response. Public submissions are limited to five per minute per IP.\n\nAll saved responses are illustrative, derived from source code, and have not been verified against a running API.",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"client_name\": \"Ayesha Khan\",\n  \"email\": \"ayesha.khan@test.com\",\n  \"company\": \"Ayesha Artisan Boutique\",\n  \"service_type\": \"E-commerce Development\",\n  \"budget_range\": \"5000_10000\",\n  \"message\": \"We sell handmade clothing and accessories and need an e-commerce website with product categories, size and color options, secure checkout, inventory tracking, and order notifications. Our team needs an administration area to update products and manage orders, and customers should have a smooth shopping experience on mobile devices.\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "Created",
+              "code": 201,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"data\": {\n    \"id\": 202,\n    \"client_name\": \"Ayesha Khan\",\n    \"email\": \"ayesha.khan@test.com\",\n    \"company\": \"Ayesha Artisan Boutique\",\n    \"service_type\": \"E-commerce Development\",\n    \"budget_range\": \"5000_10000\",\n    \"message\": \"We sell handmade clothing and accessories and need an e-commerce website with product categories, size and color options, secure checkout, inventory tracking, and order notifications. Our team needs an administration area to update products and manage orders, and customers should have a smooth shopping experience on mobile devices.\",\n    \"status\": \"new\",\n    \"assigned_user_id\": null,\n    \"created_at\": \"2026-10-14T09:00:00.000000Z\",\n    \"updated_at\": \"2026-10-14T09:00:00.000000Z\"\n  }\n}"
+            }
+          ]
+        },
+        {
+          "name": "Submit Ahmed Raza - Mobile Application Development",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "auth": {
+              "type": "noauth"
+            },
+            "url": "{{laravel_base_url}}/public/quote-requests",
+            "description": "Fictional Mobile Application Development brief. Creates a new quote and queues quote.created. Captures ahmed_quote_id from the response. Public submissions are limited to five per minute per IP.\n\nAll saved responses are illustrative, derived from source code, and have not been verified against a running API.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"client_name\": \"Ahmed Raza\",\n  \"email\": \"ahmed.raza@test.com\",\n  \"company\": \"Raza Logistics Solutions\",\n  \"service_type\": \"Mobile Application Development\",\n  \"budget_range\": \"above_10000\",\n  \"message\": \"Our delivery business needs an Android and iOS application that lets customers schedule pickups, track deliveries, and receive status notifications. Drivers should be able to view assigned jobs and confirm delivery, while our operations team needs a dashboard to manage routes and review daily activity.\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.environment.unset('ahmed_quote_id');"
+                ]
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('HTTP 201', () => pm.response.to.have.status(201));",
+                  "if (pm.response.code === 201) {",
+                  "    const data = pm.response.json().data;",
+                  "    pm.test('New unassigned client inquiry', () => {",
+                  "        pm.expect(data.id).to.be.a('number').above(0);",
+                  "        pm.expect(data.status).to.eql('new');",
+                  "        pm.expect(data.assigned_user_id).to.eql(null);",
+                  "        pm.expect(data.client_name).to.eql(\"Ahmed Raza\");",
+                  "    });",
+                  "    pm.environment.set('ahmed_quote_id', data.id);",
+                  "    ",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "response": [
+            {
+              "name": "Illustrative - not API verified - Success",
+              "originalRequest": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "auth": {
+                  "type": "noauth"
+                },
+                "url": "{{laravel_base_url}}/public/quote-requests",
+                "description": "Fictional Mobile Application Development brief. Creates a new quote and queues quote.created. Captures ahmed_quote_id from the response. Public submissions are limited to five per minute per IP.\n\nAll saved responses are illustrative, derived from source code, and have not been verified against a running API.",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"client_name\": \"Ahmed Raza\",\n  \"email\": \"ahmed.raza@test.com\",\n  \"company\": \"Raza Logistics Solutions\",\n  \"service_type\": \"Mobile Application Development\",\n  \"budget_range\": \"above_10000\",\n  \"message\": \"Our delivery business needs an Android and iOS application that lets customers schedule pickups, track deliveries, and receive status notifications. Drivers should be able to view assigned jobs and confirm delivery, while our operations team needs a dashboard to manage routes and review daily activity.\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "Created",
+              "code": 201,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"data\": {\n    \"id\": 203,\n    \"client_name\": \"Ahmed Raza\",\n    \"email\": \"ahmed.raza@test.com\",\n    \"company\": \"Raza Logistics Solutions\",\n    \"service_type\": \"Mobile Application Development\",\n    \"budget_range\": \"above_10000\",\n    \"message\": \"Our delivery business needs an Android and iOS application that lets customers schedule pickups, track deliveries, and receive status notifications. Drivers should be able to view assigned jobs and confirm delivery, while our operations team needs a dashboard to manage routes and review daily activity.\",\n    \"status\": \"new\",\n    \"assigned_user_id\": null,\n    \"created_at\": \"2026-10-14T09:00:00.000000Z\",\n    \"updated_at\": \"2026-10-14T09:00:00.000000Z\"\n  }\n}"
+            }
+          ]
+        },
+        {
+          "name": "Submit Sara Malik - API Integration",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "auth": {
+              "type": "noauth"
+            },
+            "url": "{{laravel_base_url}}/public/quote-requests",
+            "description": "Fictional API Integration brief. Creates a new quote and queues quote.created. Captures sara_quote_id from the response. Public submissions are limited to five per minute per IP.\n\nAll saved responses are illustrative, derived from source code, and have not been verified against a running API.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"client_name\": \"Sara Malik\",\n  \"email\": \"sara.malik@test.com\",\n  \"company\": \"Malik Retail Operations\",\n  \"service_type\": \"API Integration\",\n  \"budget_range\": \"under_1000\",\n  \"message\": \"We need to connect our existing online store to our inventory platform through its REST API. The integration should synchronize stock levels, send new orders to the warehouse, and record failed requests so our team can investigate them. Please include secure credential handling and a short handover guide.\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.environment.unset('sara_quote_id');"
+                ]
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('HTTP 201', () => pm.response.to.have.status(201));",
+                  "if (pm.response.code === 201) {",
+                  "    const data = pm.response.json().data;",
+                  "    pm.test('New unassigned client inquiry', () => {",
+                  "        pm.expect(data.id).to.be.a('number').above(0);",
+                  "        pm.expect(data.status).to.eql('new');",
+                  "        pm.expect(data.assigned_user_id).to.eql(null);",
+                  "        pm.expect(data.client_name).to.eql(\"Sara Malik\");",
+                  "    });",
+                  "    pm.environment.set('sara_quote_id', data.id);",
+                  "    ",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "response": [
+            {
+              "name": "Illustrative - not API verified - Success",
+              "originalRequest": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "auth": {
+                  "type": "noauth"
+                },
+                "url": "{{laravel_base_url}}/public/quote-requests",
+                "description": "Fictional API Integration brief. Creates a new quote and queues quote.created. Captures sara_quote_id from the response. Public submissions are limited to five per minute per IP.\n\nAll saved responses are illustrative, derived from source code, and have not been verified against a running API.",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"client_name\": \"Sara Malik\",\n  \"email\": \"sara.malik@test.com\",\n  \"company\": \"Malik Retail Operations\",\n  \"service_type\": \"API Integration\",\n  \"budget_range\": \"under_1000\",\n  \"message\": \"We need to connect our existing online store to our inventory platform through its REST API. The integration should synchronize stock levels, send new orders to the warehouse, and record failed requests so our team can investigate them. Please include secure credential handling and a short handover guide.\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "Created",
+              "code": 201,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"data\": {\n    \"id\": 204,\n    \"client_name\": \"Sara Malik\",\n    \"email\": \"sara.malik@test.com\",\n    \"company\": \"Malik Retail Operations\",\n    \"service_type\": \"API Integration\",\n    \"budget_range\": \"under_1000\",\n    \"message\": \"We need to connect our existing online store to our inventory platform through its REST API. The integration should synchronize stock levels, send new orders to the warehouse, and record failed requests so our team can investigate them. Please include secure credential handling and a short handover guide.\",\n    \"status\": \"new\",\n    \"assigned_user_id\": null,\n    \"created_at\": \"2026-10-14T09:00:00.000000Z\",\n    \"updated_at\": \"2026-10-14T09:00:00.000000Z\"\n  }\n}"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "02 - Seeded account login",
+      "description": "Matches StaffUserSeeder. Set passwords in the selected environment. IDs and tokens are captured from successful responses.",
+      "item": [
+        {
+          "name": "Login - Assessment Admin",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "auth": {
+              "type": "noauth"
+            },
+            "url": "{{laravel_base_url}}/login",
+            "description": "Seeded account admin@comtanix.test. Supply the account's current local password in admin_password. Password configuration comes from ASSESSMENT_ADMIN_PASSWORD. Tokens expire after eight hours. Login is limited to five attempts per minute per IP.\n\nAll saved responses are illustrative, derived from source code, and have not been verified against a running API.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"{{admin_email}}\",\n  \"password\": \"{{admin_password}}\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.environment.unset('admin_token');",
+                  "pm.environment.unset('admin_id');",
+                  "for (const key of [",
+                  "  \"admin_email\",",
+                  "  \"admin_password\"",
+                  "]) {",
+                  "    if (!String(pm.environment.get(key) ?? '').trim()) {",
+                  "        pm.execution.skipRequest();",
+                  "        throw new Error('Missing environment variable; configure it or run its prerequisite: ' + key);",
+                  "    }",
+                  "}"
+                ]
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('HTTP 200', () => pm.response.to.have.status(200));",
+                  "if (pm.response.code === 200) {",
+                  "    const body = pm.response.json();",
+                  "    pm.test('Seeded account and bearer token', () => {",
+                  "        pm.expect(body.user.email).to.eql(pm.environment.get('admin_email'));",
+                  "        pm.expect(body.user.role).to.eql('admin');",
+                  "        pm.expect(body.token_type).to.eql('Bearer');",
+                  "        pm.expect(body.token).to.be.a('string').and.not.empty;",
+                  "    });",
+                  "    pm.environment.set('admin_token', body.token);",
+                  "    pm.environment.set('admin_id', body.user.id);",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "response": [
+            {
+              "name": "Illustrative - not API verified - Success",
+              "originalRequest": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "auth": {
+                  "type": "noauth"
+                },
+                "url": "{{laravel_base_url}}/login",
+                "description": "Seeded account admin@comtanix.test. Supply the account's current local password in admin_password. Password configuration comes from ASSESSMENT_ADMIN_PASSWORD. Tokens expire after eight hours. Login is limited to five attempts per minute per IP.\n\nAll saved responses are illustrative, derived from source code, and have not been verified against a running API.",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"email\": \"{{admin_email}}\",\n  \"password\": \"{{admin_password}}\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"message\": \"Login successful.\",\n  \"token\": \"{{admin_token}}\",\n  \"token_type\": \"Bearer\",\n  \"user\": {\n    \"id\": 1,\n    \"name\": \"Assessment Admin\",\n    \"email\": \"admin@comtanix.test\",\n    \"role\": \"admin\"\n  }\n}"
+            }
+          ]
+        },
+        {
+          "name": "Login - Staff One",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "auth": {
+              "type": "noauth"
+            },
+            "url": "{{laravel_base_url}}/login",
+            "description": "Seeded account staff1@comtanix.test. Supply the account's current local password in staff_one_password. Password configuration comes from ASSESSMENT_STAFF_ONE_PASSWORD. Tokens expire after eight hours. Login is limited to five attempts per minute per IP.\n\nAll saved responses are illustrative, derived from source code, and have not been verified against a running API.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"{{staff_one_email}}\",\n  \"password\": \"{{staff_one_password}}\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.environment.unset('staff_one_token');",
+                  "pm.environment.unset('staff_one_id');",
+                  "for (const key of [",
+                  "  \"staff_one_email\",",
+                  "  \"staff_one_password\"",
+                  "]) {",
+                  "    if (!String(pm.environment.get(key) ?? '').trim()) {",
+                  "        pm.execution.skipRequest();",
+                  "        throw new Error('Missing environment variable; configure it or run its prerequisite: ' + key);",
+                  "    }",
+                  "}"
+                ]
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('HTTP 200', () => pm.response.to.have.status(200));",
+                  "if (pm.response.code === 200) {",
+                  "    const body = pm.response.json();",
+                  "    pm.test('Seeded account and bearer token', () => {",
+                  "        pm.expect(body.user.email).to.eql(pm.environment.get('staff_one_email'));",
+                  "        pm.expect(body.user.role).to.eql('staff');",
+                  "        pm.expect(body.token_type).to.eql('Bearer');",
+                  "        pm.expect(body.token).to.be.a('string').and.not.empty;",
+                  "    });",
+                  "    pm.environment.set('staff_one_token', body.token);",
+                  "    pm.environment.set('staff_one_id', body.user.id);",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "response": [
+            {
+              "name": "Illustrative - not API verified - Success",
+              "originalRequest": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "auth": {
+                  "type": "noauth"
+                },
+                "url": "{{laravel_base_url}}/login",
+                "description": "Seeded account staff1@comtanix.test. Supply the account's current local password in staff_one_password. Password configuration comes from ASSESSMENT_STAFF_ONE_PASSWORD. Tokens expire after eight hours. Login is limited to five attempts per minute per IP.\n\nAll saved responses are illustrative, derived from source code, and have not been verified against a running API.",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"email\": \"{{staff_one_email}}\",\n  \"password\": \"{{staff_one_password}}\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"message\": \"Login successful.\",\n  \"token\": \"{{staff_one_token}}\",\n  \"token_type\": \"Bearer\",\n  \"user\": {\n    \"id\": 2,\n    \"name\": \"Staff One\",\n    \"email\": \"staff1@comtanix.test\",\n    \"role\": \"staff\"\n  }\n}"
+            }
+          ]
+        },
+        {
+          "name": "Login - Staff Two",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "auth": {
+              "type": "noauth"
+            },
+            "url": "{{laravel_base_url}}/login",
+            "description": "Seeded account staff2@comtanix.test. Supply the account's current local password in staff_two_password. Password configuration comes from ASSESSMENT_STAFF_TWO_PASSWORD. Tokens expire after eight hours. Login is limited to five attempts per minute per IP.\n\nAll saved responses are illustrative, derived from source code, and have not been verified against a running API.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"{{staff_two_email}}\",\n  \"password\": \"{{staff_two_password}}\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.environment.unset('staff_two_token');",
+                  "pm.environment.unset('staff_two_id');",
+                  "for (const key of [",
+                  "  \"staff_two_email\",",
+                  "  \"staff_two_password\"",
+                  "]) {",
+                  "    if (!String(pm.environment.get(key) ?? '').trim()) {",
+                  "        pm.execution.skipRequest();",
+                  "        throw new Error('Missing environment variable; configure it or run its prerequisite: ' + key);",
+                  "    }",
+                  "}"
+                ]
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('HTTP 200', () => pm.response.to.have.status(200));",
+                  "if (pm.response.code === 200) {",
+                  "    const body = pm.response.json();",
+                  "    pm.test('Seeded account and bearer token', () => {",
+                  "        pm.expect(body.user.email).to.eql(pm.environment.get('staff_two_email'));",
+                  "        pm.expect(body.user.role).to.eql('staff');",
+                  "        pm.expect(body.token_type).to.eql('Bearer');",
+                  "        pm.expect(body.token).to.be.a('string').and.not.empty;",
+                  "    });",
+                  "    pm.environment.set('staff_two_token', body.token);",
+                  "    pm.environment.set('staff_two_id', body.user.id);",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "response": [
+            {
+              "name": "Illustrative - not API verified - Success",
+              "originalRequest": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "auth": {
+                  "type": "noauth"
+                },
+                "url": "{{laravel_base_url}}/login",
+                "description": "Seeded account staff2@comtanix.test. Supply the account's current local password in staff_two_password. Password configuration comes from ASSESSMENT_STAFF_TWO_PASSWORD. Tokens expire after eight hours. Login is limited to five attempts per minute per IP.\n\nAll saved responses are illustrative, derived from source code, and have not been verified against a running API.",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"email\": \"{{staff_two_email}}\",\n  \"password\": \"{{staff_two_password}}\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"message\": \"Login successful.\",\n  \"token\": \"{{staff_two_token}}\",\n  \"token_type\": \"Bearer\",\n  \"user\": {\n    \"id\": 3,\n    \"name\": \"Staff Two\",\n    \"email\": \"staff2@comtanix.test\",\n    \"role\": \"staff\"\n  }\n}"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "03 - Admin review and assignment",
+      "description": "Run after submissions and logins. Uses Saim's collection-created quote, resolves real staff IDs, assigns work, and starts review.",
+      "item": [
+        {
+          "name": "View admin profile",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{admin_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "url": "{{laravel_base_url}}/user",
+            "description": "Authenticated seeded admin profile.\n\nAll saved responses are illustrative, derived from source code, and have not been verified against a running API."
+          },
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "for (const key of [",
+                  "  \"admin_token\"",
+                  "]) {",
+                  "    if (!String(pm.environment.get(key) ?? '').trim()) {",
+                  "        pm.execution.skipRequest();",
+                  "        throw new Error('Missing environment variable; configure it or run its prerequisite: ' + key);",
+                  "    }",
+                  "}"
+                ]
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('HTTP 200', () => pm.response.to.have.status(200));"
+                ]
+              }
+            }
+          ],
+          "response": [
+            {
+              "name": "Illustrative - not API verified - Success",
+              "originalRequest": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{admin_token}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "url": "{{laravel_base_url}}/user",
+                "description": "Authenticated seeded admin profile.\n\nAll saved responses are illustrative, derived from source code, and have not been verified against a running API."
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"data\": {\n    \"id\": 1,\n    \"name\": \"Assessment Admin\",\n    \"email\": \"admin@comtanix.test\",\n    \"role\": \"admin\"\n  }\n}"
+            }
+          ]
+        },
+        {
+          "name": "Discover real staff IDs",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{admin_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "url": "{{laravel_base_url}}/staff-users",
+            "description": "Admin-only staff directory. Finds seeded staff by email rather than assuming IDs 2 and 3 exist.\n\nAll saved responses are illustrative, derived from source code, and have not been verified against a running API."
+          },
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.environment.unset('staff_one_id');",
+                  "pm.environment.unset('staff_two_id');",
+                  "for (const key of [",
+                  "  \"admin_token\"",
+                  "]) {",
+                  "    if (!String(pm.environment.get(key) ?? '').trim()) {",
+                  "        pm.execution.skipRequest();",
+                  "        throw new Error('Missing environment variable; configure it or run its prerequisite: ' + key);",
+                  "    }",
+                  "}"
+                ]
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('HTTP 200', () => pm.response.to.have.status(200));",
+                  "if (pm.response.code === 200) {",
+                  "    const users = pm.response.json().data;",
+                  "    for (const key of ['staff_one','staff_two']) {",
+                  "        const user = users.find(user => user.email === pm.environment.get(key + '_email'));",
+                  "        pm.test('Directory contains ' + key, () => pm.expect(user).to.be.an('object'));",
+                  "        if (user) pm.environment.set(key + '_id', user.id);",
+                  "    }",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "response": [
+            {
+              "name": "Illustrative - not API verified - Success",
+              "originalRequest": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{admin_token}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "url": "{{laravel_base_url}}/staff-users",
+                "description": "Admin-only staff directory. Finds seeded staff by email rather than assuming IDs 2 and 3 exist.\n\nAll saved responses are illustrative, derived from source code, and have not been verified against a running API."
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"data\": [\n    {\n      \"id\": 2,\n      \"name\": \"Staff One\",\n      \"email\": \"staff1@comtanix.test\"\n    },\n    {\n      \"id\": 3,\n      \"name\": \"Staff Two\",\n      \"email\": \"staff2@comtanix.test\"\n    }\n  ]\n}"
+            }
+          ]
+        },
+        {
+          "name": "List quotes - newest first",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{admin_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "url": "{{laravel_base_url}}/quote-requests?sort_by=created_at&sort_direction=desc&per_page=20",
+            "description": "Paginated quotes. Saved totals and rows are illustrative; actual results include the database's other quotes.\n\nAll saved responses are illustrative, derived from source code, and have not been verified against a running API."
+          },
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "for (const key of [",
+                  "  \"admin_token\"",
+                  "]) {",
+                  "    if (!String(pm.environment.get(key) ?? '').trim()) {",
+                  "        pm.execution.skipRequest();",
+                  "        throw new Error('Missing environment variable; configure it or run its prerequisite: ' + key);",
+                  "    }",
+                  "}"
+                ]
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('HTTP 200', () => pm.response.to.have.status(200));"
+                ]
+              }
+            }
+          ],
+          "response": [
+            {
+              "name": "Illustrative - not API verified - Success",
+              "originalRequest": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{admin_token}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "url": "{{laravel_base_url}}/quote-requests?sort_by=created_at&sort_direction=desc&per_page=20",
+                "description": "Paginated quotes. Saved totals and rows are illustrative; actual results include the database's other quotes.\n\nAll saved responses are illustrative, derived from source code, and have not been verified against a running API."
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"data\": [\n    {\n      \"id\": 204,\n      \"client_name\": \"Sara Malik\",\n      \"email\": \"sara.malik@test.com\",\n      \"company\": \"Malik Retail Operations\",\n      \"service_type\": \"API Integration\",\n      \"budget_range\": \"under_1000\",\n      \"message\": \"We need to connect our existing online store to our inventory platform through its REST API. The integration should synchronize stock levels, send new orders to the warehouse, and record failed requests so our team can investigate them. Please include secure credential handling and a short handover guide.\",\n      \"status\": \"new\",\n      \"assigned_user_id\": null,\n      \"assigned_user\": null,\n      \"created_at\": \"2026-10-14T09:00:00.000000Z\",\n      \"updated_at\": \"2026-10-14T09:00:00.000000Z\"\n    },\n    {\n      \"id\": 203,\n      \"client_name\": \"Ahmed Raza\",\n      \"email\": \"ahmed.raza@test.com\",\n      \"company\": \"Raza Logistics Solutions\",\n      \"service_type\": \"Mobile Application Development\",\n      \"budget_range\": \"above_10000\",\n      \"message\": \"Our delivery business needs an Android and iOS application that lets customers schedule pickups, track deliveries, and receive status notifications. Drivers should be able to view assigned jobs and confirm delivery, while our operations team needs a dashboard to manage routes and review daily activity.\",\n      \"status\": \"new\",\n      \"assigned_user_id\": null,\n      \"assigned_user\": null,\n      \"created_at\": \"2026-10-14T09:00:00.000000Z\",\n      \"updated_at\": \"2026-10-14T09:00:00.000000Z\"\n    },\n    {\n      \"id\": 202,\n      \"client_name\": \"Ayesha Khan\",\n      \"email\": \"ayesha.khan@test.com\",\n      \"company\": \"Ayesha Artisan Boutique\",\n      \"service_type\": \"E-commerce Development\",\n      \"budget_range\": \"5000_10000\",\n      \"message\": \"We sell handmade clothing and accessories and need an e-commerce website with product categories, size and color options, secure checkout, inventory tracking, and order notifications. Our team needs an administration area to update products and manage orders, and customers should have a smooth shopping experience on mobile devices.\",\n      \"status\": \"new\",\n      \"assigned_user_id\": null,\n      \"assigned_user\": null,\n      \"created_at\": \"2026-10-14T09:00:00.000000Z\",\n      \"updated_at\": \"2026-10-14T09:00:00.000000Z\"\n    },\n    {\n      \"id\": 201,\n      \"client_name\": \"Saim Arifeen\",\n      \"email\": \"saim.arifeen@test.com\",\n      \"company\": \"Saim Digital Solutions\",\n      \"service_type\": \"Web Development\",\n      \"budget_range\": \"1000_5000\",\n      \"message\": \"I run a small online business and need a modern, responsive website where customers can explore our services, submit inquiries, and contact our team. The website should load quickly, work well on mobile devices, and include a simple administration area.\",\n      \"status\": \"new\",\n      \"assigned_user_id\": null,\n      \"assigned_user\": null,\n      \"created_at\": \"2026-10-14T09:00:00.000000Z\",\n      \"updated_at\": \"2026-10-14T09:00:00.000000Z\"\n    }\n  ],\n  \"links\": {\n    \"first\": \"http://127.0.0.1:8000/api/quote-requests?sort_by=created_at&sort_direction=desc&per_page=20&page=1\",\n    \"last\": \"http://127.0.0.1:8000/api/quote-requests?sort_by=created_at&sort_direction=desc&per_page=20&page=1\",\n    \"prev\": null,\n    \"next\": null\n  },\n  \"meta\": {\n    \"current_page\": 1,\n    \"from\": 1,\n    \"last_page\": 1,\n    \"links\": [\n      {\n        \"url\": null,\n        \"label\": \"&laquo; Previous\",\n        \"page\": null,\n        \"active\": false\n      },\n      {\n        \"url\": \"http://127.0.0.1:8000/api/quote-requests?sort_by=created_at&sort_direction=desc&per_page=20&page=1\",\n        \"label\": \"1\",\n        \"page\": 1,\n        \"active\": true\n      },\n      {\n        \"url\": null,\n        \"label\": \"Next &raquo;\",\n        \"page\": null,\n        \"active\": false\n      }\n    ],\n    \"path\": \"http://127.0.0.1:8000/api/quote-requests\",\n    \"per_page\": 20,\n    \"to\": 4,\n    \"total\": 4\n  }\n}"
+            }
+          ]
+        },
+        {
+          "name": "Find Saim business website inquiry",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{admin_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "url": "{{laravel_base_url}}/quote-requests?search=Saim%20Arifeen&service_type=Web%20Development&sort_by=id&sort_direction=desc&per_page=20",
+            "description": "Search matches client name, email, or company; service type is a substring match.\n\nAll saved responses are illustrative, derived from source code, and have not been verified against a running API."
+          },
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "for (const key of [",
+                  "  \"admin_token\"",
+                  "]) {",
+                  "    if (!String(pm.environment.get(key) ?? '').trim()) {",
+                  "        pm.execution.skipRequest();",
+                  "        throw new Error('Missing environment variable; configure it or run its prerequisite: ' + key);",
+                  "    }",
+                  "}"
+                ]
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('HTTP 200', () => pm.response.to.have.status(200));"
+                ]
+              }
+            }
+          ],
+          "response": [
+            {
+              "name": "Illustrative - not API verified - Success",
+              "originalRequest": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{admin_token}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "url": "{{laravel_base_url}}/quote-requests?search=Saim%20Arifeen&service_type=Web%20Development&sort_by=id&sort_direction=desc&per_page=20",
+                "description": "Search matches client name, email, or company; service type is a substring match.\n\nAll saved responses are illustrative, derived from source code, and have not been verified against a running API."
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"data\": [\n    {\n      \"id\": 201,\n      \"client_name\": \"Saim Arifeen\",\n      \"email\": \"saim.arifeen@test.com\",\n      \"company\": \"Saim Digital Solutions\",\n      \"service_type\": \"Web Development\",\n      \"budget_range\": \"1000_5000\",\n      \"message\": \"I run a small online business and need a modern, responsive website where customers can explore our services, submit inquiries, and contact our team. The website should load quickly, work well on mobile devices, and include a simple administration area.\",\n      \"status\": \"new\",\n      \"assigned_user_id\": null,\n      \"assigned_user\": null,\n      \"created_at\": \"2026-10-14T09:00:00.000000Z\",\n      \"updated_at\": \"2026-10-14T09:00:00.000000Z\"\n    }\n  ],\n  \"links\": {\n    \"first\": \"http://127.0.0.1:8000/api/quote-requests?search=Saim%20Arifeen&service_type=Web%20Development&sort_by=id&sort_direction=desc&per_page=20&page=1\",\n    \"last\": \"http://127.0.0.1:8000/api/quote-requests?search=Saim%20Arifeen&service_type=Web%20Development&sort_by=id&sort_direction=desc&per_page=20&page=1\",\n    \"prev\": null,\n    \"next\": null\n  },\n  \"meta\": {\n    \"current_page\": 1,\n    \"from\": 1,\n    \"last_page\": 1,\n    \"links\": [\n      {\n        \"url\": null,\n        \"label\": \"&laquo; Previous\",\n        \"page\": null,\n        \"active\": false\n      },\n      {\n        \"url\": \"http://127.0.0.1:8000/api/quote-requests?search=Saim%20Arifeen&service_type=Web%20Development&sort_by=id&sort_direction=desc&per_page=20&page=1\",\n        \"label\": \"1\",\n        \"page\": 1,\n        \"active\": true\n      },\n      {\n        \"url\": null,\n        \"label\": \"Next &raquo;\",\n        \"page\": null,\n        \"active\": false\n      }\n    ],\n    \"path\": \"http://127.0.0.1:8000/api/quote-requests\",\n    \"per_page\": 20,\n    \"to\": 1,\n    \"total\": 1\n  }\n}"
+            }
+          ]
+        },
+        {
+          "name": "List new unassigned inquiries",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{admin_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "url": "{{laravel_base_url}}/quote-requests?status=new&unassigned=1&sort_by=created_at&sort_direction=desc&per_page=20",
+            "description": "Use unassigned=0 or 1. Never combine unassigned=1 with assigned_user_id.\n\nAll saved responses are illustrative, derived from source code, and have not been verified against a running API."
+          },
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "for (const key of [",
+                  "  \"admin_token\"",
+                  "]) {",
+                  "    if (!String(pm.environment.get(key) ?? '').trim()) {",
+                  "        pm.execution.skipRequest();",
+                  "        throw new Error('Missing environment variable; configure it or run its prerequisite: ' + key);",
+                  "    }",
+                  "}"
+                ]
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('HTTP 200', () => pm.response.to.have.status(200));"
+                ]
+              }
+            }
+          ],
+          "response": [
+            {
+              "name": "Illustrative - not API verified - Success",
+              "originalRequest": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{admin_token}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "url": "{{laravel_base_url}}/quote-requests?status=new&unassigned=1&sort_by=created_at&sort_direction=desc&per_page=20",
+                "description": "Use unassigned=0 or 1. Never combine unassigned=1 with assigned_user_id.\n\nAll saved responses are illustrative, derived from source code, and have not been verified against a running API."
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"data\": [\n    {\n      \"id\": 204,\n      \"client_name\": \"Sara Malik\",\n      \"email\": \"sara.malik@test.com\",\n      \"company\": \"Malik Retail Operations\",\n      \"service_type\": \"API Integration\",\n      \"budget_range\": \"under_1000\",\n      \"message\": \"We need to connect our existing online store to our inventory platform through its REST API. The integration should synchronize stock levels, send new orders to the warehouse, and record failed requests so our team can investigate them. Please include secure credential handling and a short handover guide.\",\n      \"status\": \"new\",\n      \"assigned_user_id\": null,\n      \"assigned_user\": null,\n      \"created_at\": \"2026-10-14T09:00:00.000000Z\",\n      \"updated_at\": \"2026-10-14T09:00:00.000000Z\"\n    },\n    {\n      \"id\": 203,\n      \"client_name\": \"Ahmed Raza\",\n      \"email\": \"ahmed.raza@test.com\",\n      \"company\": \"Raza Logistics Solutions\",\n      \"service_type\": \"Mobile Application Development\",\n      \"budget_range\": \"above_10000\",\n      \"message\": \"Our delivery business needs an Android and iOS application that lets customers schedule pickups, track deliveries, and receive status notifications. Drivers should be able to view assigned jobs and confirm delivery, while our operations team needs a dashboard to manage routes and review daily activity.\",\n      \"status\": \"new\",\n      \"assigned_user_id\": null,\n      \"assigned_user\": null,\n      \"created_at\": \"2026-10-14T09:00:00.000000Z\",\n      \"updated_at\": \"2026-10-14T09:00:00.000000Z\"\n    },\n    {\n      \"id\": 202,\n      \"client_name\": \"Ayesha Khan\",\n      \"email\": \"ayesha.khan@test.com\",\n      \"company\": \"Ayesha Artisan Boutique\",\n      \"service_type\": \"E-commerce Development\",\n      \"budget_range\": \"5000_10000\",\n      \"message\": \"We sell handmade clothing and accessories and need an e-commerce website with product categories, size and color options, secure checkout, inventory tracking, and order notifications. Our team needs an administration area to update products and manage orders, and customers should have a smooth shopping experience on mobile devices.\",\n      \"status\": \"new\",\n      \"assigned_user_id\": null,\n      \"assigned_user\": null,\n      \"created_at\": \"2026-10-14T09:00:00.000000Z\",\n      \"updated_at\": \"2026-10-14T09:00:00.000000Z\"\n    },\n    {\n      \"id\": 201,\n      \"client_name\": \"Saim Arifeen\",\n      \"email\": \"saim.arifeen@test.com\",\n      \"company\": \"Saim Digital Solutions\",\n      \"service_type\": \"Web Development\",\n      \"budget_range\": \"1000_5000\",\n      \"message\": \"I run a small online business and need a modern, responsive website where customers can explore our services, submit inquiries, and contact our team. The website should load quickly, work well on mobile devices, and include a simple administration area.\",\n      \"status\": \"new\",\n      \"assigned_user_id\": null,\n      \"assigned_user\": null,\n      \"created_at\": \"2026-10-14T09:00:00.000000Z\",\n      \"updated_at\": \"2026-10-14T09:00:00.000000Z\"\n    }\n  ],\n  \"links\": {\n    \"first\": \"http://127.0.0.1:8000/api/quote-requests?status=new&unassigned=1&sort_by=created_at&sort_direction=desc&per_page=20&page=1\",\n    \"last\": \"http://127.0.0.1:8000/api/quote-requests?status=new&unassigned=1&sort_by=created_at&sort_direction=desc&per_page=20&page=1\",\n    \"prev\": null,\n    \"next\": null\n  },\n  \"meta\": {\n    \"current_page\": 1,\n    \"from\": 1,\n    \"last_page\": 1,\n    \"links\": [\n      {\n        \"url\": null,\n        \"label\": \"&laquo; Previous\",\n        \"page\": null,\n        \"active\": false\n      },\n      {\n        \"url\": \"http://127.0.0.1:8000/api/quote-requests?status=new&unassigned=1&sort_by=created_at&sort_direction=desc&per_page=20&page=1\",\n        \"label\": \"1\",\n        \"page\": 1,\n        \"active\": true\n      },\n      {\n        \"url\": null,\n        \"label\": \"Next &raquo;\",\n        \"page\": null,\n        \"active\": false\n      }\n    ],\n    \"path\": \"http://127.0.0.1:8000/api/quote-requests\",\n    \"per_page\": 20,\n    \"to\": 4,\n    \"total\": 4\n  }\n}"
+            }
+          ]
+        },
+        {
+          "name": "List available service types",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{admin_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "url": "{{laravel_base_url}}/quote-requests/service-types",
+            "description": "Returns distinct sorted service types on non-deleted quotes. service_type is a string, not an enum.\n\nAll saved responses are illustrative, derived from source code, and have not been verified against a running API."
+          },
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "for (const key of [",
+                  "  \"admin_token\"",
+                  "]) {",
+                  "    if (!String(pm.environment.get(key) ?? '').trim()) {",
+                  "        pm.execution.skipRequest();",
+                  "        throw new Error('Missing environment variable; configure it or run its prerequisite: ' + key);",
+                  "    }",
+                  "}"
+                ]
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('HTTP 200', () => pm.response.to.have.status(200));"
+                ]
+              }
+            }
+          ],
+          "response": [
+            {
+              "name": "Illustrative - not API verified - Success",
+              "originalRequest": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{admin_token}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "url": "{{laravel_base_url}}/quote-requests/service-types",
+                "description": "Returns distinct sorted service types on non-deleted quotes. service_type is a string, not an enum.\n\nAll saved responses are illustrative, derived from source code, and have not been verified against a running API."
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"data\": [\n    \"API Integration\",\n    \"E-commerce Development\",\n    \"Mobile Application Development\",\n    \"Web Development\"\n  ]\n}"
+            }
+          ]
+        },
+        {
+          "name": "View Saim quote details",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{admin_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "url": "{{laravel_base_url}}/quote-requests/{{quote_request_id}}",
+            "description": "Captured Saim quote ID. The show endpoint loads assigned_user; public creation omits that relation.\n\nAll saved responses are illustrative, derived from source code, and have not been verified against a running API."
+          },
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "for (const key of [",
+                  "  \"admin_token\",",
+                  "  \"quote_request_id\"",
+                  "]) {",
+                  "    if (!String(pm.environment.get(key) ?? '').trim()) {",
+                  "        pm.execution.skipRequest();",
+                  "        throw new Error('Missing environment variable; configure it or run its prerequisite: ' + key);",
+                  "    }",
+                  "}"
+                ]
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('HTTP 200', () => pm.response.to.have.status(200));",
+                  "if (pm.response.code === 200) pm.test('Requested quote ID', () => pm.expect(pm.response.json().data.id).to.eql(Number(pm.environment.get('quote_request_id'))));"
+                ]
+              }
+            }
+          ],
+          "response": [
+            {
+              "name": "Illustrative - not API verified - Success",
+              "originalRequest": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{admin_token}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "url": "{{laravel_base_url}}/quote-requests/{{quote_request_id}}",
+                "description": "Captured Saim quote ID. The show endpoint loads assigned_user; public creation omits that relation.\n\nAll saved responses are illustrative, derived from source code, and have not been verified against a running API."
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"data\": {\n    \"id\": 201,\n    \"client_name\": \"Saim Arifeen\",\n    \"email\": \"saim.arifeen@test.com\",\n    \"company\": \"Saim Digital Solutions\",\n    \"service_type\": \"Web Development\",\n    \"budget_range\": \"1000_5000\",\n    \"message\": \"I run a small online business and need a modern, responsive website where customers can explore our services, submit inquiries, and contact our team. The website should load quickly, work well on mobile devices, and include a simple administration area.\",\n    \"status\": \"new\",\n    \"assigned_user_id\": null,\n    \"assigned_user\": null,\n    \"created_at\": \"2026-10-14T09:00:00.000000Z\",\n    \"updated_at\": \"2026-10-14T09:00:00.000000Z\"\n  }\n}"
+            }
+          ]
+        },
+        {
+          "name": "Assign Saim website to Staff One",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{admin_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "url": "{{laravel_base_url}}/quote-requests/{{quote_request_id}}/assign",
+            "description": "Admin-only assignment to an existing staff user. Queues quote.assigned with oldAssignedUserId and newAssignedUserId. Reassigning to the same user creates no additional event.\n\nAll saved responses are illustrative, derived from source code, and have not been verified against a running API.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"assigned_user_id\": {{staff_one_id}}\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "for (const key of [",
+                  "  \"admin_token\",",
+                  "  \"quote_request_id\",",
+                  "  \"staff_one_id\"",
+                  "]) {",
+                  "    if (!String(pm.environment.get(key) ?? '').trim()) {",
+                  "        pm.execution.skipRequest();",
+                  "        throw new Error('Missing environment variable; configure it or run its prerequisite: ' + key);",
+                  "    }",
+                  "}"
+                ]
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('HTTP 200', () => pm.response.to.have.status(200));",
+                  "if (pm.response.code === 200) pm.test('Requested quote ID', () => pm.expect(pm.response.json().data.id).to.eql(Number(pm.environment.get('quote_request_id'))));",
+                  "if (pm.response.code === 200) pm.test('Assigned to Staff One', () => pm.expect(pm.response.json().data.assigned_user_id).to.eql(Number(pm.environment.get('staff_one_id'))));"
+                ]
+              }
+            }
+          ],
+          "response": [
+            {
+              "name": "Illustrative - not API verified - Success",
+              "originalRequest": {
+                "method": "PATCH",
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{admin_token}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "url": "{{laravel_base_url}}/quote-requests/{{quote_request_id}}/assign",
+                "description": "Admin-only assignment to an existing staff user. Queues quote.assigned with oldAssignedUserId and newAssignedUserId. Reassigning to the same user creates no additional event.\n\nAll saved responses are illustrative, derived from source code, and have not been verified against a running API.",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"assigned_user_id\": {{staff_one_id}}\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"data\": {\n    \"id\": 201,\n    \"client_name\": \"Saim Arifeen\",\n    \"email\": \"saim.arifeen@test.com\",\n    \"company\": \"Saim Digital Solutions\",\n    \"service_type\": \"Web Development\",\n    \"budget_range\": \"1000_5000\",\n    \"message\": \"I run a small online business and need a modern, responsive website where customers can explore our services, submit inquiries, and contact our team. The website should load quickly, work well on mobile devices, and include a simple administration area.\",\n    \"status\": \"new\",\n    \"assigned_user_id\": 2,\n    \"assigned_user\": {\n      \"id\": 2,\n      \"name\": \"Staff One\",\n      \"email\": \"staff1@comtanix.test\"\n    },\n    \"created_at\": \"2026-10-14T09:00:00.000000Z\",\n    \"updated_at\": \"2026-10-14T09:15:00.000000Z\"\n  }\n}"
+            },
+            {
+              "name": "Illustrative - not API verified - Staff forbidden from assigning",
+              "originalRequest": {
+                "method": "PATCH",
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{staff_one_token}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "url": "{{laravel_base_url}}/quote-requests/{{quote_request_id}}/assign",
+                "description": "Admin-only assignment to an existing staff user. Queues quote.assigned with oldAssignedUserId and newAssignedUserId. Reassigning to the same user creates no additional event.\n\nAll saved responses are illustrative, derived from source code, and have not been verified against a running API.",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"assigned_user_id\": {{staff_one_id}}\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "Forbidden",
+              "code": 403,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"message\": \"This action is unauthorized.\"\n}"
+            }
+          ]
+        },
+        {
+          "name": "List Staff One assigned inquiries",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{admin_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "url": "{{laravel_base_url}}/quote-requests?assigned_user_id={{staff_one_id}}&sort_by=client_name&sort_direction=asc&per_page=20",
+            "description": "Uses the real staff ID from the directory. Saved ID 2 is illustrative.\n\nAll saved responses are illustrative, derived from source code, and have not been verified against a running API."
+          },
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "for (const key of [",
+                  "  \"admin_token\",",
+                  "  \"staff_one_id\"",
+                  "]) {",
+                  "    if (!String(pm.environment.get(key) ?? '').trim()) {",
+                  "        pm.execution.skipRequest();",
+                  "        throw new Error('Missing environment variable; configure it or run its prerequisite: ' + key);",
+                  "    }",
+                  "}"
+                ]
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('HTTP 200', () => pm.response.to.have.status(200));"
+                ]
+              }
+            }
+          ],
+          "response": [
+            {
+              "name": "Illustrative - not API verified - Success",
+              "originalRequest": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{admin_token}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "url": "{{laravel_base_url}}/quote-requests?assigned_user_id={{staff_one_id}}&sort_by=client_name&sort_direction=asc&per_page=20",
+                "description": "Uses the real staff ID from the directory. Saved ID 2 is illustrative.\n\nAll saved responses are illustrative, derived from source code, and have not been verified against a running API."
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"data\": [\n    {\n      \"id\": 201,\n      \"client_name\": \"Saim Arifeen\",\n      \"email\": \"saim.arifeen@test.com\",\n      \"company\": \"Saim Digital Solutions\",\n      \"service_type\": \"Web Development\",\n      \"budget_range\": \"1000_5000\",\n      \"message\": \"I run a small online business and need a modern, responsive website where customers can explore our services, submit inquiries, and contact our team. The website should load quickly, work well on mobile devices, and include a simple administration area.\",\n      \"status\": \"new\",\n      \"assigned_user_id\": 2,\n      \"assigned_user\": {\n        \"id\": 2,\n        \"name\": \"Staff One\",\n        \"email\": \"staff1@comtanix.test\"\n      },\n      \"created_at\": \"2026-10-14T09:00:00.000000Z\",\n      \"updated_at\": \"2026-10-14T09:15:00.000000Z\"\n    }\n  ],\n  \"links\": {\n    \"first\": \"http://127.0.0.1:8000/api/quote-requests?assigned_user_id=2&sort_by=client_name&sort_direction=asc&per_page=20&page=1\",\n    \"last\": \"http://127.0.0.1:8000/api/quote-requests?assigned_user_id=2&sort_by=client_name&sort_direction=asc&per_page=20&page=1\",\n    \"prev\": null,\n    \"next\": null\n  },\n  \"meta\": {\n    \"current_page\": 1,\n    \"from\": 1,\n    \"last_page\": 1,\n    \"links\": [\n      {\n        \"url\": null,\n        \"label\": \"&laquo; Previous\",\n        \"page\": null,\n        \"active\": false\n      },\n      {\n        \"url\": \"http://127.0.0.1:8000/api/quote-requests?assigned_user_id=2&sort_by=client_name&sort_direction=asc&per_page=20&page=1\",\n        \"label\": \"1\",\n        \"page\": 1,\n        \"active\": true\n      },\n      {\n        \"url\": null,\n        \"label\": \"Next &raquo;\",\n        \"page\": null,\n        \"active\": false\n      }\n    ],\n    \"path\": \"http://127.0.0.1:8000/api/quote-requests\",\n    \"per_page\": 20,\n    \"to\": 1,\n    \"total\": 1\n  }\n}"
+            }
+          ]
+        },
+        {
+          "name": "Begin project review - new to in_review",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{admin_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "url": "{{laravel_base_url}}/quote-requests/{{quote_request_id}}/status",
+            "description": "Prerequisite: current status new. Moves to in_review and queues quote.status_changed with oldStatus/newStatus.\n\nAll saved responses are illustrative, derived from source code, and have not been verified against a running API.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"status\": \"in_review\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "for (const key of [",
+                  "  \"admin_token\",",
+                  "  \"quote_request_id\"",
+                  "]) {",
+                  "    if (!String(pm.environment.get(key) ?? '').trim()) {",
+                  "        pm.execution.skipRequest();",
+                  "        throw new Error('Missing environment variable; configure it or run its prerequisite: ' + key);",
+                  "    }",
+                  "}"
+                ]
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('HTTP 200', () => pm.response.to.have.status(200));",
+                  "if (pm.response.code === 200) pm.test('Requested quote ID', () => pm.expect(pm.response.json().data.id).to.eql(Number(pm.environment.get('quote_request_id'))));",
+                  "if (pm.response.code === 200) pm.test('Status is in_review', () => pm.expect(pm.response.json().data.status).to.eql('in_review'));"
+                ]
+              }
+            }
+          ],
+          "response": [
+            {
+              "name": "Illustrative - not API verified - Success",
+              "originalRequest": {
+                "method": "PATCH",
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{admin_token}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "url": "{{laravel_base_url}}/quote-requests/{{quote_request_id}}/status",
+                "description": "Prerequisite: current status new. Moves to in_review and queues quote.status_changed with oldStatus/newStatus.\n\nAll saved responses are illustrative, derived from source code, and have not been verified against a running API.",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"status\": \"in_review\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"data\": {\n    \"id\": 201,\n    \"client_name\": \"Saim Arifeen\",\n    \"email\": \"saim.arifeen@test.com\",\n    \"company\": \"Saim Digital Solutions\",\n    \"service_type\": \"Web Development\",\n    \"budget_range\": \"1000_5000\",\n    \"message\": \"I run a small online business and need a modern, responsive website where customers can explore our services, submit inquiries, and contact our team. The website should load quickly, work well on mobile devices, and include a simple administration area.\",\n    \"status\": \"in_review\",\n    \"assigned_user_id\": 2,\n    \"assigned_user\": {\n      \"id\": 2,\n      \"name\": \"Staff One\",\n      \"email\": \"staff1@comtanix.test\"\n    },\n    \"created_at\": \"2026-10-14T09:00:00.000000Z\",\n    \"updated_at\": \"2026-10-14T09:15:00.000000Z\"\n  }\n}"
+            }
+          ]
+        },
+        {
+          "name": "Read Saim audit timeline",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{admin_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "url": "{{laravel_base_url}}/quote-requests/{{quote_request_id}}/events?page=1&per_page=20",
+            "description": "Laravel authorizes quote access and proxies Node audit history using its server-side read token. Events sort by occurredAt descending. Requires a configured audit service and running queue worker; delivery is asynchronous and results may initially be empty.\n\nAll saved responses are illustrative, derived from source code, and have not been verified against a running API."
+          },
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "for (const key of [",
+                  "  \"admin_token\",",
+                  "  \"quote_request_id\"",
+                  "]) {",
+                  "    if (!String(pm.environment.get(key) ?? '').trim()) {",
+                  "        pm.execution.skipRequest();",
+                  "        throw new Error('Missing environment variable; configure it or run its prerequisite: ' + key);",
+                  "    }",
+                  "}"
+                ]
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('HTTP 200', () => pm.response.to.have.status(200));",
+                  "if (pm.response.code === 200) {",
+                  "    const body = pm.response.json();",
+                  "    pm.test('Audit pagination', () => {",
+                  "        pm.expect(body.data).to.be.an('array');",
+                  "        pm.expect(body.meta.current_page).to.eql(1);",
+                  "        pm.expect(body.meta.per_page).to.eql(20);",
+                  "    });",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "response": [
+            {
+              "name": "Illustrative - not API verified - Success",
+              "originalRequest": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{admin_token}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "url": "{{laravel_base_url}}/quote-requests/{{quote_request_id}}/events?page=1&per_page=20",
+                "description": "Laravel authorizes quote access and proxies Node audit history using its server-side read token. Events sort by occurredAt descending. Requires a configured audit service and running queue worker; delivery is asynchronous and results may initially be empty.\n\nAll saved responses are illustrative, derived from source code, and have not been verified against a running API."
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"data\": [\n    {\n      \"eventId\": \"8327a8bc-41f2-4a57-a1dc-49a76fbd160f\",\n      \"type\": \"quote.status_changed\",\n      \"quoteRequestId\": 201,\n      \"actorId\": 1,\n      \"data\": {\n        \"oldStatus\": \"new\",\n        \"newStatus\": \"in_review\"\n      },\n      \"occurredAt\": \"2026-10-14T09:10:00.000Z\",\n      \"receivedAt\": \"2026-10-14T09:10:01.000Z\"\n    },\n    {\n      \"eventId\": \"b446dfe2-8a55-4df1-9f23-d3a5655f6cb8\",\n      \"type\": \"quote.assigned\",\n      \"quoteRequestId\": 201,\n      \"actorId\": 1,\n      \"data\": {\n        \"oldAssignedUserId\": null,\n        \"newAssignedUserId\": 2\n      },\n      \"occurredAt\": \"2026-10-14T09:05:00.000Z\",\n      \"receivedAt\": \"2026-10-14T09:05:01.000Z\"\n    },\n    {\n      \"eventId\": \"63d0937f-6c4e-42a8-a15c-2a052b6cc391\",\n      \"type\": \"quote.created\",\n      \"quoteRequestId\": 201,\n      \"actorId\": null,\n      \"data\": {\n        \"serviceType\": \"Web Development\",\n        \"budgetRange\": \"1000_5000\"\n      },\n      \"occurredAt\": \"2026-10-14T09:00:00.000Z\",\n      \"receivedAt\": \"2026-10-14T09:00:01.000Z\"\n    }\n  ],\n  \"meta\": {\n    \"current_page\": 1,\n    \"per_page\": 20,\n    \"total\": 3,\n    \"last_page\": 1\n  }\n}"
+            },
+            {
+              "name": "Illustrative - not API verified - Audit service is not configured.",
+              "originalRequest": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{admin_token}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "url": "{{laravel_base_url}}/quote-requests/{{quote_request_id}}/events?page=1&per_page=20",
+                "description": "Laravel authorizes quote access and proxies Node audit history using its server-side read token. Events sort by occurredAt descending. Requires a configured audit service and running queue worker; delivery is asynchronous and results may initially be empty.\n\nAll saved responses are illustrative, derived from source code, and have not been verified against a running API."
+              },
+              "status": "Service Unavailable",
+              "code": 503,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"message\": \"Audit service is not configured.\"\n}"
+            },
+            {
+              "name": "Illustrative - not API verified - Audit history is temporarily unavailable.",
+              "originalRequest": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{admin_token}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "url": "{{laravel_base_url}}/quote-requests/{{quote_request_id}}/events?page=1&per_page=20",
+                "description": "Laravel authorizes quote access and proxies Node audit history using its server-side read token. Events sort by occurredAt descending. Requires a configured audit service and running queue worker; delivery is asynchronous and results may initially be empty.\n\nAll saved responses are illustrative, derived from source code, and have not been verified against a running API."
+              },
+              "status": "Bad Gateway",
+              "code": 502,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"message\": \"Audit history is temporarily unavailable.\"\n}"
+            },
+            {
+              "name": "Illustrative - not API verified - Audit service is temporarily unavailable.",
+              "originalRequest": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{admin_token}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "url": "{{laravel_base_url}}/quote-requests/{{quote_request_id}}/events?page=1&per_page=20",
+                "description": "Laravel authorizes quote access and proxies Node audit history using its server-side read token. Events sort by occurredAt descending. Requires a configured audit service and running queue worker; delivery is asynchronous and results may initially be empty.\n\nAll saved responses are illustrative, derived from source code, and have not been verified against a running API."
+              },
+              "status": "Service Unavailable",
+              "code": 503,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"message\": \"Audit service is temporarily unavailable.\"\n}"
+            }
+          ]
+        },
+        {
+          "name": "Filter assignment events",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{admin_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "url": "{{laravel_base_url}}/quote-requests/{{quote_request_id}}/events?page=1&per_page=20&type=quote.assigned",
+            "description": "Laravel authorizes quote access and proxies Node audit history using its server-side read token. Events sort by occurredAt descending. Requires a configured audit service and running queue worker; delivery is asynchronous and results may initially be empty.\n\nAll saved responses are illustrative, derived from source code, and have not been verified against a running API."
+          },
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "for (const key of [",
+                  "  \"admin_token\",",
+                  "  \"quote_request_id\"",
+                  "]) {",
+                  "    if (!String(pm.environment.get(key) ?? '').trim()) {",
+                  "        pm.execution.skipRequest();",
+                  "        throw new Error('Missing environment variable; configure it or run its prerequisite: ' + key);",
+                  "    }",
+                  "}"
+                ]
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('HTTP 200', () => pm.response.to.have.status(200));",
+                  "if (pm.response.code === 200) {",
+                  "    const body = pm.response.json();",
+                  "    pm.test('Audit pagination', () => {",
+                  "        pm.expect(body.data).to.be.an('array');",
+                  "        pm.expect(body.meta.current_page).to.eql(1);",
+                  "        pm.expect(body.meta.per_page).to.eql(20);",
+                  "    });",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "response": [
+            {
+              "name": "Illustrative - not API verified - Success",
+              "originalRequest": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{admin_token}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "url": "{{laravel_base_url}}/quote-requests/{{quote_request_id}}/events?page=1&per_page=20&type=quote.assigned",
+                "description": "Laravel authorizes quote access and proxies Node audit history using its server-side read token. Events sort by occurredAt descending. Requires a configured audit service and running queue worker; delivery is asynchronous and results may initially be empty.\n\nAll saved responses are illustrative, derived from source code, and have not been verified against a running API."
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"data\": [\n    {\n      \"eventId\": \"b446dfe2-8a55-4df1-9f23-d3a5655f6cb8\",\n      \"type\": \"quote.assigned\",\n      \"quoteRequestId\": 201,\n      \"actorId\": 1,\n      \"data\": {\n        \"oldAssignedUserId\": null,\n        \"newAssignedUserId\": 2\n      },\n      \"occurredAt\": \"2026-10-14T09:05:00.000Z\",\n      \"receivedAt\": \"2026-10-14T09:05:01.000Z\"\n    }\n  ],\n  \"meta\": {\n    \"current_page\": 1,\n    \"per_page\": 20,\n    \"total\": 1,\n    \"last_page\": 1\n  }\n}"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "04 - Assigned staff workflow",
+      "description": "Staff can read all quotes, but change status only on their assigned quotes. Staff cannot assign, delete, or access the staff directory.",
+      "item": [
+        {
+          "name": "View Staff One profile",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{staff_one_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "url": "{{laravel_base_url}}/user",
+            "description": "Authenticated seeded Staff One profile.\n\nAll saved responses are illustrative, derived from source code, and have not been verified against a running API."
+          },
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "for (const key of [",
+                  "  \"staff_one_token\"",
+                  "]) {",
+                  "    if (!String(pm.environment.get(key) ?? '').trim()) {",
+                  "        pm.execution.skipRequest();",
+                  "        throw new Error('Missing environment variable; configure it or run its prerequisite: ' + key);",
+                  "    }",
+                  "}"
+                ]
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('HTTP 200', () => pm.response.to.have.status(200));"
+                ]
+              }
+            }
+          ],
+          "response": [
+            {
+              "name": "Illustrative - not API verified - Success",
+              "originalRequest": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{staff_one_token}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "url": "{{laravel_base_url}}/user",
+                "description": "Authenticated seeded Staff One profile.\n\nAll saved responses are illustrative, derived from source code, and have not been verified against a running API."
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"data\": {\n    \"id\": 2,\n    \"name\": \"Staff One\",\n    \"email\": \"staff1@comtanix.test\",\n    \"role\": \"staff\"\n  }\n}"
+            }
+          ]
+        },
+        {
+          "name": "Staff reads assigned business website brief",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{staff_one_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "url": "{{laravel_base_url}}/quote-requests/{{quote_request_id}}",
+            "description": "Review Saim's assigned website brief before preparing a proposal.\n\nAll saved responses are illustrative, derived from source code, and have not been verified against a running API."
+          },
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "for (const key of [",
+                  "  \"staff_one_token\",",
+                  "  \"quote_request_id\"",
+                  "]) {",
+                  "    if (!String(pm.environment.get(key) ?? '').trim()) {",
+                  "        pm.execution.skipRequest();",
+                  "        throw new Error('Missing environment variable; configure it or run its prerequisite: ' + key);",
+                  "    }",
+                  "}"
+                ]
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('HTTP 200', () => pm.response.to.have.status(200));",
+                  "if (pm.response.code === 200) pm.test('Requested quote ID', () => pm.expect(pm.response.json().data.id).to.eql(Number(pm.environment.get('quote_request_id'))));"
+                ]
+              }
+            }
+          ],
+          "response": [
+            {
+              "name": "Illustrative - not API verified - Success",
+              "originalRequest": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{staff_one_token}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "url": "{{laravel_base_url}}/quote-requests/{{quote_request_id}}",
+                "description": "Review Saim's assigned website brief before preparing a proposal.\n\nAll saved responses are illustrative, derived from source code, and have not been verified against a running API."
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"data\": {\n    \"id\": 201,\n    \"client_name\": \"Saim Arifeen\",\n    \"email\": \"saim.arifeen@test.com\",\n    \"company\": \"Saim Digital Solutions\",\n    \"service_type\": \"Web Development\",\n    \"budget_range\": \"1000_5000\",\n    \"message\": \"I run a small online business and need a modern, responsive website where customers can explore our services, submit inquiries, and contact our team. The website should load quickly, work well on mobile devices, and include a simple administration area.\",\n    \"status\": \"in_review\",\n    \"assigned_user_id\": 2,\n    \"assigned_user\": {\n      \"id\": 2,\n      \"name\": \"Staff One\",\n      \"email\": \"staff1@comtanix.test\"\n    },\n    \"created_at\": \"2026-10-14T09:00:00.000000Z\",\n    \"updated_at\": \"2026-10-14T09:15:00.000000Z\"\n  }\n}"
+            }
+          ]
+        },
+        {
+          "name": "Prepare proposal - in_review to quoted",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{staff_one_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "url": "{{laravel_base_url}}/quote-requests/{{quote_request_id}}/status",
+            "description": "Prerequisite: current status in_review. Moves to quoted and queues quote.status_changed with oldStatus/newStatus. Staff One must be assigned to the quote.\n\nAll saved responses are illustrative, derived from source code, and have not been verified against a running API.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"status\": \"quoted\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "for (const key of [",
+                  "  \"staff_one_token\",",
+                  "  \"quote_request_id\"",
+                  "]) {",
+                  "    if (!String(pm.environment.get(key) ?? '').trim()) {",
+                  "        pm.execution.skipRequest();",
+                  "        throw new Error('Missing environment variable; configure it or run its prerequisite: ' + key);",
+                  "    }",
+                  "}"
+                ]
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('HTTP 200', () => pm.response.to.have.status(200));",
+                  "if (pm.response.code === 200) pm.test('Requested quote ID', () => pm.expect(pm.response.json().data.id).to.eql(Number(pm.environment.get('quote_request_id'))));",
+                  "if (pm.response.code === 200) pm.test('Status is quoted', () => pm.expect(pm.response.json().data.status).to.eql('quoted'));"
+                ]
+              }
+            }
+          ],
+          "response": [
+            {
+              "name": "Illustrative - not API verified - Success",
+              "originalRequest": {
+                "method": "PATCH",
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{staff_one_token}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "url": "{{laravel_base_url}}/quote-requests/{{quote_request_id}}/status",
+                "description": "Prerequisite: current status in_review. Moves to quoted and queues quote.status_changed with oldStatus/newStatus. Staff One must be assigned to the quote.\n\nAll saved responses are illustrative, derived from source code, and have not been verified against a running API.",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"status\": \"quoted\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"data\": {\n    \"id\": 201,\n    \"client_name\": \"Saim Arifeen\",\n    \"email\": \"saim.arifeen@test.com\",\n    \"company\": \"Saim Digital Solutions\",\n    \"service_type\": \"Web Development\",\n    \"budget_range\": \"1000_5000\",\n    \"message\": \"I run a small online business and need a modern, responsive website where customers can explore our services, submit inquiries, and contact our team. The website should load quickly, work well on mobile devices, and include a simple administration area.\",\n    \"status\": \"quoted\",\n    \"assigned_user_id\": 2,\n    \"assigned_user\": {\n      \"id\": 2,\n      \"name\": \"Staff One\",\n      \"email\": \"staff1@comtanix.test\"\n    },\n    \"created_at\": \"2026-10-14T09:00:00.000000Z\",\n    \"updated_at\": \"2026-10-14T09:15:00.000000Z\"\n  }\n}"
+            }
+          ]
+        },
+        {
+          "name": "Staff reads status changes",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{staff_one_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "url": "{{laravel_base_url}}/quote-requests/{{quote_request_id}}/events?page=1&per_page=20&type=quote.status_changed",
+            "description": "Laravel authorizes quote access and proxies Node audit history using its server-side read token. Events sort by occurredAt descending. Requires a configured audit service and running queue worker; delivery is asynchronous and results may initially be empty.\n\nAll saved responses are illustrative, derived from source code, and have not been verified against a running API."
+          },
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "for (const key of [",
+                  "  \"staff_one_token\",",
+                  "  \"quote_request_id\"",
+                  "]) {",
+                  "    if (!String(pm.environment.get(key) ?? '').trim()) {",
+                  "        pm.execution.skipRequest();",
+                  "        throw new Error('Missing environment variable; configure it or run its prerequisite: ' + key);",
+                  "    }",
+                  "}"
+                ]
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('HTTP 200', () => pm.response.to.have.status(200));",
+                  "if (pm.response.code === 200) {",
+                  "    const body = pm.response.json();",
+                  "    pm.test('Audit pagination', () => {",
+                  "        pm.expect(body.data).to.be.an('array');",
+                  "        pm.expect(body.meta.current_page).to.eql(1);",
+                  "        pm.expect(body.meta.per_page).to.eql(20);",
+                  "    });",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "response": [
+            {
+              "name": "Illustrative - not API verified - Success",
+              "originalRequest": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{staff_one_token}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "url": "{{laravel_base_url}}/quote-requests/{{quote_request_id}}/events?page=1&per_page=20&type=quote.status_changed",
+                "description": "Laravel authorizes quote access and proxies Node audit history using its server-side read token. Events sort by occurredAt descending. Requires a configured audit service and running queue worker; delivery is asynchronous and results may initially be empty.\n\nAll saved responses are illustrative, derived from source code, and have not been verified against a running API."
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"data\": [\n    {\n      \"eventId\": \"b87b57dc-03ab-48ed-aeb0-3576f9226bda\",\n      \"type\": \"quote.status_changed\",\n      \"quoteRequestId\": 201,\n      \"actorId\": 2,\n      \"data\": {\n        \"oldStatus\": \"in_review\",\n        \"newStatus\": \"quoted\"\n      },\n      \"occurredAt\": \"2026-10-14T09:15:00.000Z\",\n      \"receivedAt\": \"2026-10-14T09:15:01.000Z\"\n    },\n    {\n      \"eventId\": \"8327a8bc-41f2-4a57-a1dc-49a76fbd160f\",\n      \"type\": \"quote.status_changed\",\n      \"quoteRequestId\": 201,\n      \"actorId\": 1,\n      \"data\": {\n        \"oldStatus\": \"new\",\n        \"newStatus\": \"in_review\"\n      },\n      \"occurredAt\": \"2026-10-14T09:10:00.000Z\",\n      \"receivedAt\": \"2026-10-14T09:10:01.000Z\"\n    }\n  ],\n  \"meta\": {\n    \"current_page\": 1,\n    \"per_page\": 20,\n    \"total\": 2,\n    \"last_page\": 1\n  }\n}"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "05 - Admin completion",
+      "description": "Run after Staff One prepares the proposal. Closed quotes have no further valid transitions.",
+      "item": [
+        {
+          "name": "Close completed proposal - quoted to closed",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{admin_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "url": "{{laravel_base_url}}/quote-requests/{{quote_request_id}}/status",
+            "description": "Prerequisite: current status quoted. Moves to closed and queues quote.status_changed with oldStatus/newStatus.\n\nAll saved responses are illustrative, derived from source code, and have not been verified against a running API.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"status\": \"closed\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "for (const key of [",
+                  "  \"admin_token\",",
+                  "  \"quote_request_id\"",
+                  "]) {",
+                  "    if (!String(pm.environment.get(key) ?? '').trim()) {",
+                  "        pm.execution.skipRequest();",
+                  "        throw new Error('Missing environment variable; configure it or run its prerequisite: ' + key);",
+                  "    }",
+                  "}"
+                ]
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('HTTP 200', () => pm.response.to.have.status(200));",
+                  "if (pm.response.code === 200) pm.test('Requested quote ID', () => pm.expect(pm.response.json().data.id).to.eql(Number(pm.environment.get('quote_request_id'))));",
+                  "if (pm.response.code === 200) pm.test('Status is closed', () => pm.expect(pm.response.json().data.status).to.eql('closed'));"
+                ]
+              }
+            }
+          ],
+          "response": [
+            {
+              "name": "Illustrative - not API verified - Success",
+              "originalRequest": {
+                "method": "PATCH",
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{admin_token}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "url": "{{laravel_base_url}}/quote-requests/{{quote_request_id}}/status",
+                "description": "Prerequisite: current status quoted. Moves to closed and queues quote.status_changed with oldStatus/newStatus.\n\nAll saved responses are illustrative, derived from source code, and have not been verified against a running API.",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"status\": \"closed\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"data\": {\n    \"id\": 201,\n    \"client_name\": \"Saim Arifeen\",\n    \"email\": \"saim.arifeen@test.com\",\n    \"company\": \"Saim Digital Solutions\",\n    \"service_type\": \"Web Development\",\n    \"budget_range\": \"1000_5000\",\n    \"message\": \"I run a small online business and need a modern, responsive website where customers can explore our services, submit inquiries, and contact our team. The website should load quickly, work well on mobile devices, and include a simple administration area.\",\n    \"status\": \"closed\",\n    \"assigned_user_id\": 2,\n    \"assigned_user\": {\n      \"id\": 2,\n      \"name\": \"Staff One\",\n      \"email\": \"staff1@comtanix.test\"\n    },\n    \"created_at\": \"2026-10-14T09:00:00.000000Z\",\n    \"updated_at\": \"2026-10-14T09:15:00.000000Z\"\n  }\n}"
+            },
+            {
+              "name": "Illustrative - not API verified - Repeated close rejected",
+              "originalRequest": {
+                "method": "PATCH",
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{admin_token}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "url": "{{laravel_base_url}}/quote-requests/{{quote_request_id}}/status",
+                "description": "Prerequisite: current status quoted. Moves to closed and queues quote.status_changed with oldStatus/newStatus.\n\nAll saved responses are illustrative, derived from source code, and have not been verified against a running API.",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"status\": \"closed\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "Unprocessable Content",
+              "code": 422,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"message\": \"Cannot transition from closed to closed.\",\n  \"errors\": {\n    \"status\": [\n      \"Cannot transition from closed to closed.\"\n    ]\n  }\n}"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "06 - Node audit service",
+      "description": "Read requires the service read token. Signed writes are synthetic examples, skipped by default. Laravel already publishes genuine events; enabling writes adds illustrative documents to MongoDB.",
+      "item": [
+        {
+          "name": "Read Node audit history directly",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "X-Audit-Read-Token",
+                "value": "{{audit_read_token}}"
+              }
+            ],
+            "auth": {
+              "type": "noauth"
+            },
+            "url": "{{audit_base_url}}/events?quoteRequestId={{quote_request_id}}&page=1&per_page=20",
+            "description": "Internal read endpoint. Uses X-Audit-Read-Token. Optional type filter accepts the three audit event types.\n\nAll saved responses are illustrative, derived from source code, and have not been verified against a running API."
+          },
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "for (const key of [",
+                  "  \"audit_read_token\",",
+                  "  \"quote_request_id\"",
+                  "]) {",
+                  "    if (!String(pm.environment.get(key) ?? '').trim()) {",
+                  "        pm.execution.skipRequest();",
+                  "        throw new Error('Missing environment variable; configure it or run its prerequisite: ' + key);",
+                  "    }",
+                  "}"
+                ]
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('HTTP 200', () => pm.response.to.have.status(200));"
+                ]
+              }
+            }
+          ],
+          "response": [
+            {
+              "name": "Illustrative - not API verified - Success",
+              "originalRequest": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "X-Audit-Read-Token",
+                    "value": "{{audit_read_token}}"
+                  }
+                ],
+                "auth": {
+                  "type": "noauth"
+                },
+                "url": "{{audit_base_url}}/events?quoteRequestId={{quote_request_id}}&page=1&per_page=20",
+                "description": "Internal read endpoint. Uses X-Audit-Read-Token. Optional type filter accepts the three audit event types.\n\nAll saved responses are illustrative, derived from source code, and have not been verified against a running API."
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"data\": [\n    {\n      \"eventId\": \"b87b57dc-03ab-48ed-aeb0-3576f9226bda\",\n      \"type\": \"quote.status_changed\",\n      \"quoteRequestId\": 201,\n      \"actorId\": 2,\n      \"data\": {\n        \"oldStatus\": \"in_review\",\n        \"newStatus\": \"quoted\"\n      },\n      \"occurredAt\": \"2026-10-14T09:15:00.000Z\",\n      \"receivedAt\": \"2026-10-14T09:15:01.000Z\"\n    },\n    {\n      \"eventId\": \"8327a8bc-41f2-4a57-a1dc-49a76fbd160f\",\n      \"type\": \"quote.status_changed\",\n      \"quoteRequestId\": 201,\n      \"actorId\": 1,\n      \"data\": {\n        \"oldStatus\": \"new\",\n        \"newStatus\": \"in_review\"\n      },\n      \"occurredAt\": \"2026-10-14T09:10:00.000Z\",\n      \"receivedAt\": \"2026-10-14T09:10:01.000Z\"\n    },\n    {\n      \"eventId\": \"b446dfe2-8a55-4df1-9f23-d3a5655f6cb8\",\n      \"type\": \"quote.assigned\",\n      \"quoteRequestId\": 201,\n      \"actorId\": 1,\n      \"data\": {\n        \"oldAssignedUserId\": null,\n        \"newAssignedUserId\": 2\n      },\n      \"occurredAt\": \"2026-10-14T09:05:00.000Z\",\n      \"receivedAt\": \"2026-10-14T09:05:01.000Z\"\n    },\n    {\n      \"eventId\": \"63d0937f-6c4e-42a8-a15c-2a052b6cc391\",\n      \"type\": \"quote.created\",\n      \"quoteRequestId\": 201,\n      \"actorId\": null,\n      \"data\": {\n        \"serviceType\": \"Web Development\",\n        \"budgetRange\": \"1000_5000\"\n      },\n      \"occurredAt\": \"2026-10-14T09:00:00.000Z\",\n      \"receivedAt\": \"2026-10-14T09:00:01.000Z\"\n    }\n  ],\n  \"meta\": {\n    \"current_page\": 1,\n    \"per_page\": 20,\n    \"total\": 4,\n    \"last_page\": 1\n  }\n}"
+            },
+            {
+              "name": "Illustrative - not API verified - Missing read token",
+              "originalRequest": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "auth": {
+                  "type": "noauth"
+                },
+                "url": "{{audit_base_url}}/events?quoteRequestId={{quote_request_id}}&page=1&per_page=20",
+                "description": "Internal read endpoint. Uses X-Audit-Read-Token. Optional type filter accepts the three audit event types.\n\nAll saved responses are illustrative, derived from source code, and have not been verified against a running API."
+              },
+              "status": "Unauthorized",
+              "code": 401,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"message\": \"Unauthorized.\"\n}"
+            }
+          ]
+        },
+        {
+          "name": "Signed quote.created - optional synthetic event",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "auth": {
+              "type": "noauth"
+            },
+            "url": "{{audit_base_url}}/events",
+            "description": "Skipped unless enable_direct_audit_writes=true. Inserts a synthetic audit document without changing the Laravel quote. Metadata matches its publisher. Generates one UUID and timestamp per send; HMAC-SHA256 signs the exact resolved UTF-8 body. receivedAt is server-generated and cannot appear in the strict input schema.\n\nAll saved responses are illustrative, derived from source code, and have not been verified against a running API.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"eventId\": \"{{audit_event_id}}\",\n  \"type\": \"quote.created\",\n  \"quoteRequestId\": {{quote_request_id}},\n  \"actorId\": null,\n  \"data\": {\n    \"serviceType\": \"Web Development\",\n    \"budgetRange\": \"1000_5000\"\n  },\n  \"occurredAt\": \"{{audit_occurred_at}}\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "if (pm.environment.get('enable_direct_audit_writes') !== 'true') {",
+                  "    pm.execution.skipRequest();",
+                  "} else {",
+                  "    for (const key of [",
+                  "      \"audit_shared_secret\",",
+                  "      \"quote_request_id\"",
+                  "    ]) {",
+                  "        if (!String(pm.environment.get(key) ?? '').trim()) {",
+                  "            pm.execution.skipRequest();",
+                  "            throw new Error('Missing environment variable; configure it or run its prerequisite: ' + key);",
+                  "        }",
+                  "    }",
+                  "    pm.variables.set('audit_event_id', pm.variables.replaceIn('{{$guid}}'));",
+                  "    pm.variables.set('audit_occurred_at', new Date().toISOString());",
+                  "    const body = pm.variables.replaceIn(pm.request.body.raw);",
+                  "    const encoder = new TextEncoder();",
+                  "    const key = await crypto.subtle.importKey('raw', encoder.encode(pm.environment.get('audit_shared_secret')), { name: 'HMAC', hash: 'SHA-256' }, false, ['sign']);",
+                  "    const signature = await crypto.subtle.sign('HMAC', key, encoder.encode(body));",
+                  "    const hex = Array.from(new Uint8Array(signature), byte => byte.toString(16).padStart(2, '0')).join('');",
+                  "    pm.request.headers.upsert({ key: 'X-Signature', value: hex });",
+                  "}"
+                ]
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('HTTP 201', () => pm.response.to.have.status(201));",
+                  "if (pm.response.code === 201) pm.test('Stored signed event', () => pm.expect(pm.response.json().eventId).to.eql(pm.variables.get('audit_event_id')));"
+                ]
+              }
+            }
+          ],
+          "response": [
+            {
+              "name": "Illustrative - not API verified - Success",
+              "originalRequest": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "auth": {
+                  "type": "noauth"
+                },
+                "url": "{{audit_base_url}}/events",
+                "description": "Skipped unless enable_direct_audit_writes=true. Inserts a synthetic audit document without changing the Laravel quote. Metadata matches its publisher. Generates one UUID and timestamp per send; HMAC-SHA256 signs the exact resolved UTF-8 body. receivedAt is server-generated and cannot appear in the strict input schema.\n\nAll saved responses are illustrative, derived from source code, and have not been verified against a running API.",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"eventId\": \"63d0937f-6c4e-42a8-a15c-2a052b6cc391\",\n  \"type\": \"quote.created\",\n  \"quoteRequestId\": 201,\n  \"actorId\": null,\n  \"data\": {\n    \"serviceType\": \"Web Development\",\n    \"budgetRange\": \"1000_5000\"\n  },\n  \"occurredAt\": \"2026-10-14T09:00:00.000Z\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "Created",
+              "code": 201,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"message\": \"Audit event stored.\",\n  \"eventId\": \"63d0937f-6c4e-42a8-a15c-2a052b6cc391\"\n}"
+            },
+            {
+              "name": "Illustrative - not API verified - Same eventId replay is idempotent",
+              "originalRequest": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "auth": {
+                  "type": "noauth"
+                },
+                "url": "{{audit_base_url}}/events",
+                "description": "Skipped unless enable_direct_audit_writes=true. Inserts a synthetic audit document without changing the Laravel quote. Metadata matches its publisher. Generates one UUID and timestamp per send; HMAC-SHA256 signs the exact resolved UTF-8 body. receivedAt is server-generated and cannot appear in the strict input schema.\n\nAll saved responses are illustrative, derived from source code, and have not been verified against a running API.",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"eventId\": \"63d0937f-6c4e-42a8-a15c-2a052b6cc391\",\n  \"type\": \"quote.created\",\n  \"quoteRequestId\": 201,\n  \"actorId\": null,\n  \"data\": {\n    \"serviceType\": \"Web Development\",\n    \"budgetRange\": \"1000_5000\"\n  },\n  \"occurredAt\": \"2026-10-14T09:00:00.000Z\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"message\": \"Event already processed.\",\n  \"eventId\": \"63d0937f-6c4e-42a8-a15c-2a052b6cc391\"\n}"
+            }
+          ]
+        },
+        {
+          "name": "Signed quote.assigned - optional synthetic event",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "auth": {
+              "type": "noauth"
+            },
+            "url": "{{audit_base_url}}/events",
+            "description": "Skipped unless enable_direct_audit_writes=true. Inserts a synthetic audit document without changing the Laravel quote. Metadata matches its publisher. Generates one UUID and timestamp per send; HMAC-SHA256 signs the exact resolved UTF-8 body. receivedAt is server-generated and cannot appear in the strict input schema.\n\nAll saved responses are illustrative, derived from source code, and have not been verified against a running API.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"eventId\": \"{{audit_event_id}}\",\n  \"type\": \"quote.assigned\",\n  \"quoteRequestId\": {{quote_request_id}},\n  \"actorId\": {{admin_id}},\n  \"data\": {\n    \"oldAssignedUserId\": null,\n    \"newAssignedUserId\": {{staff_one_id}}\n  },\n  \"occurredAt\": \"{{audit_occurred_at}}\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "if (pm.environment.get('enable_direct_audit_writes') !== 'true') {",
+                  "    pm.execution.skipRequest();",
+                  "} else {",
+                  "    for (const key of [",
+                  "      \"audit_shared_secret\",",
+                  "      \"quote_request_id\",",
+                  "      \"admin_id\",",
+                  "      \"staff_one_id\"",
+                  "    ]) {",
+                  "        if (!String(pm.environment.get(key) ?? '').trim()) {",
+                  "            pm.execution.skipRequest();",
+                  "            throw new Error('Missing environment variable; configure it or run its prerequisite: ' + key);",
+                  "        }",
+                  "    }",
+                  "    pm.variables.set('audit_event_id', pm.variables.replaceIn('{{$guid}}'));",
+                  "    pm.variables.set('audit_occurred_at', new Date().toISOString());",
+                  "    const body = pm.variables.replaceIn(pm.request.body.raw);",
+                  "    const encoder = new TextEncoder();",
+                  "    const key = await crypto.subtle.importKey('raw', encoder.encode(pm.environment.get('audit_shared_secret')), { name: 'HMAC', hash: 'SHA-256' }, false, ['sign']);",
+                  "    const signature = await crypto.subtle.sign('HMAC', key, encoder.encode(body));",
+                  "    const hex = Array.from(new Uint8Array(signature), byte => byte.toString(16).padStart(2, '0')).join('');",
+                  "    pm.request.headers.upsert({ key: 'X-Signature', value: hex });",
+                  "}"
+                ]
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('HTTP 201', () => pm.response.to.have.status(201));",
+                  "if (pm.response.code === 201) pm.test('Stored signed event', () => pm.expect(pm.response.json().eventId).to.eql(pm.variables.get('audit_event_id')));"
+                ]
+              }
+            }
+          ],
+          "response": [
+            {
+              "name": "Illustrative - not API verified - Success",
+              "originalRequest": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "auth": {
+                  "type": "noauth"
+                },
+                "url": "{{audit_base_url}}/events",
+                "description": "Skipped unless enable_direct_audit_writes=true. Inserts a synthetic audit document without changing the Laravel quote. Metadata matches its publisher. Generates one UUID and timestamp per send; HMAC-SHA256 signs the exact resolved UTF-8 body. receivedAt is server-generated and cannot appear in the strict input schema.\n\nAll saved responses are illustrative, derived from source code, and have not been verified against a running API.",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"eventId\": \"b446dfe2-8a55-4df1-9f23-d3a5655f6cb8\",\n  \"type\": \"quote.assigned\",\n  \"quoteRequestId\": 201,\n  \"actorId\": 1,\n  \"data\": {\n    \"oldAssignedUserId\": null,\n    \"newAssignedUserId\": 2\n  },\n  \"occurredAt\": \"2026-10-14T09:05:00.000Z\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "Created",
+              "code": 201,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"message\": \"Audit event stored.\",\n  \"eventId\": \"b446dfe2-8a55-4df1-9f23-d3a5655f6cb8\"\n}"
+            },
+            {
+              "name": "Illustrative - not API verified - Same eventId replay is idempotent",
+              "originalRequest": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "auth": {
+                  "type": "noauth"
+                },
+                "url": "{{audit_base_url}}/events",
+                "description": "Skipped unless enable_direct_audit_writes=true. Inserts a synthetic audit document without changing the Laravel quote. Metadata matches its publisher. Generates one UUID and timestamp per send; HMAC-SHA256 signs the exact resolved UTF-8 body. receivedAt is server-generated and cannot appear in the strict input schema.\n\nAll saved responses are illustrative, derived from source code, and have not been verified against a running API.",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"eventId\": \"b446dfe2-8a55-4df1-9f23-d3a5655f6cb8\",\n  \"type\": \"quote.assigned\",\n  \"quoteRequestId\": 201,\n  \"actorId\": 1,\n  \"data\": {\n    \"oldAssignedUserId\": null,\n    \"newAssignedUserId\": 2\n  },\n  \"occurredAt\": \"2026-10-14T09:05:00.000Z\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"message\": \"Event already processed.\",\n  \"eventId\": \"b446dfe2-8a55-4df1-9f23-d3a5655f6cb8\"\n}"
+            }
+          ]
+        },
+        {
+          "name": "Signed quote.status_changed - optional synthetic event",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "auth": {
+              "type": "noauth"
+            },
+            "url": "{{audit_base_url}}/events",
+            "description": "Skipped unless enable_direct_audit_writes=true. Inserts a synthetic audit document without changing the Laravel quote. Metadata matches its publisher. Generates one UUID and timestamp per send; HMAC-SHA256 signs the exact resolved UTF-8 body. receivedAt is server-generated and cannot appear in the strict input schema.\n\nAll saved responses are illustrative, derived from source code, and have not been verified against a running API.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"eventId\": \"{{audit_event_id}}\",\n  \"type\": \"quote.status_changed\",\n  \"quoteRequestId\": {{quote_request_id}},\n  \"actorId\": {{admin_id}},\n  \"data\": {\n    \"oldStatus\": \"new\",\n    \"newStatus\": \"in_review\"\n  },\n  \"occurredAt\": \"{{audit_occurred_at}}\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "if (pm.environment.get('enable_direct_audit_writes') !== 'true') {",
+                  "    pm.execution.skipRequest();",
+                  "} else {",
+                  "    for (const key of [",
+                  "      \"audit_shared_secret\",",
+                  "      \"quote_request_id\",",
+                  "      \"admin_id\"",
+                  "    ]) {",
+                  "        if (!String(pm.environment.get(key) ?? '').trim()) {",
+                  "            pm.execution.skipRequest();",
+                  "            throw new Error('Missing environment variable; configure it or run its prerequisite: ' + key);",
+                  "        }",
+                  "    }",
+                  "    pm.variables.set('audit_event_id', pm.variables.replaceIn('{{$guid}}'));",
+                  "    pm.variables.set('audit_occurred_at', new Date().toISOString());",
+                  "    const body = pm.variables.replaceIn(pm.request.body.raw);",
+                  "    const encoder = new TextEncoder();",
+                  "    const key = await crypto.subtle.importKey('raw', encoder.encode(pm.environment.get('audit_shared_secret')), { name: 'HMAC', hash: 'SHA-256' }, false, ['sign']);",
+                  "    const signature = await crypto.subtle.sign('HMAC', key, encoder.encode(body));",
+                  "    const hex = Array.from(new Uint8Array(signature), byte => byte.toString(16).padStart(2, '0')).join('');",
+                  "    pm.request.headers.upsert({ key: 'X-Signature', value: hex });",
+                  "}"
+                ]
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('HTTP 201', () => pm.response.to.have.status(201));",
+                  "if (pm.response.code === 201) pm.test('Stored signed event', () => pm.expect(pm.response.json().eventId).to.eql(pm.variables.get('audit_event_id')));"
+                ]
+              }
+            }
+          ],
+          "response": [
+            {
+              "name": "Illustrative - not API verified - Success",
+              "originalRequest": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "auth": {
+                  "type": "noauth"
+                },
+                "url": "{{audit_base_url}}/events",
+                "description": "Skipped unless enable_direct_audit_writes=true. Inserts a synthetic audit document without changing the Laravel quote. Metadata matches its publisher. Generates one UUID and timestamp per send; HMAC-SHA256 signs the exact resolved UTF-8 body. receivedAt is server-generated and cannot appear in the strict input schema.\n\nAll saved responses are illustrative, derived from source code, and have not been verified against a running API.",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"eventId\": \"8327a8bc-41f2-4a57-a1dc-49a76fbd160f\",\n  \"type\": \"quote.status_changed\",\n  \"quoteRequestId\": 201,\n  \"actorId\": 1,\n  \"data\": {\n    \"oldStatus\": \"new\",\n    \"newStatus\": \"in_review\"\n  },\n  \"occurredAt\": \"2026-10-14T09:10:00.000Z\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "Created",
+              "code": 201,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"message\": \"Audit event stored.\",\n  \"eventId\": \"8327a8bc-41f2-4a57-a1dc-49a76fbd160f\"\n}"
+            },
+            {
+              "name": "Illustrative - not API verified - Same eventId replay is idempotent",
+              "originalRequest": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "auth": {
+                  "type": "noauth"
+                },
+                "url": "{{audit_base_url}}/events",
+                "description": "Skipped unless enable_direct_audit_writes=true. Inserts a synthetic audit document without changing the Laravel quote. Metadata matches its publisher. Generates one UUID and timestamp per send; HMAC-SHA256 signs the exact resolved UTF-8 body. receivedAt is server-generated and cannot appear in the strict input schema.\n\nAll saved responses are illustrative, derived from source code, and have not been verified against a running API.",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"eventId\": \"8327a8bc-41f2-4a57-a1dc-49a76fbd160f\",\n  \"type\": \"quote.status_changed\",\n  \"quoteRequestId\": 201,\n  \"actorId\": 1,\n  \"data\": {\n    \"oldStatus\": \"new\",\n    \"newStatus\": \"in_review\"\n  },\n  \"occurredAt\": \"2026-10-14T09:10:00.000Z\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"message\": \"Event already processed.\",\n  \"eventId\": \"8327a8bc-41f2-4a57-a1dc-49a76fbd160f\"\n}"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "07 - Optional soft deletion",
+      "description": "Skipped by default. Review the captured quote ID before setting enable_quote_delete=true.",
+      "item": [
+        {
+          "name": "Soft-delete Saim sample quote - optional",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{admin_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "url": "{{laravel_base_url}}/quote-requests/{{quote_request_id}}",
+            "description": "Admin-only soft deletion of the selected quote. Returns an empty body. No quote.deleted event exists. Use Saim's collection-created ID.\n\nAll saved responses are illustrative, derived from source code, and have not been verified against a running API."
+          },
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "if (pm.environment.get('enable_quote_delete') !== 'true') pm.execution.skipRequest();",
+                  "for (const key of [",
+                  "  \"admin_token\",",
+                  "  \"quote_request_id\"",
+                  "]) {",
+                  "    if (!String(pm.environment.get(key) ?? '').trim()) {",
+                  "        pm.execution.skipRequest();",
+                  "        throw new Error('Missing environment variable; configure it or run its prerequisite: ' + key);",
+                  "    }",
+                  "}"
+                ]
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('HTTP 204', () => pm.response.to.have.status(204));"
+                ]
+              }
+            }
+          ],
+          "response": [
+            {
+              "name": "Illustrative - not API verified - Success",
+              "originalRequest": {
+                "method": "DELETE",
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{admin_token}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "url": "{{laravel_base_url}}/quote-requests/{{quote_request_id}}",
+                "description": "Admin-only soft deletion of the selected quote. Returns an empty body. No quote.deleted event exists. Use Saim's collection-created ID.\n\nAll saved responses are illustrative, derived from source code, and have not been verified against a running API."
+              },
+              "status": "No Content",
+              "code": 204,
+              "_postman_previewlanguage": "json",
+              "header": [],
+              "cookie": [],
+              "body": ""
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "08 - Logout",
+      "description": "Run last. Revokes each token created by login and clears it only after success.",
+      "item": [
+        {
+          "name": "Logout - Assessment Admin",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{admin_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "url": "{{laravel_base_url}}/logout",
+            "description": "Revokes the current Sanctum bearer token. Login again for a new token.\n\nAll saved responses are illustrative, derived from source code, and have not been verified against a running API."
+          },
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "for (const key of [",
+                  "  \"admin_token\"",
+                  "]) {",
+                  "    if (!String(pm.environment.get(key) ?? '').trim()) {",
+                  "        pm.execution.skipRequest();",
+                  "        throw new Error('Missing environment variable; configure it or run its prerequisite: ' + key);",
+                  "    }",
+                  "}"
+                ]
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('HTTP 200', () => pm.response.to.have.status(200));",
+                  "if (pm.response.code === 200) pm.environment.unset('admin_token');"
+                ]
+              }
+            }
+          ],
+          "response": [
+            {
+              "name": "Illustrative - not API verified - Success",
+              "originalRequest": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{admin_token}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "url": "{{laravel_base_url}}/logout",
+                "description": "Revokes the current Sanctum bearer token. Login again for a new token.\n\nAll saved responses are illustrative, derived from source code, and have not been verified against a running API."
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"message\": \"Logged out successfully.\"\n}"
+            }
+          ]
+        },
+        {
+          "name": "Logout - Staff One",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{staff_one_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "url": "{{laravel_base_url}}/logout",
+            "description": "Revokes the current Sanctum bearer token. Login again for a new token.\n\nAll saved responses are illustrative, derived from source code, and have not been verified against a running API."
+          },
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "for (const key of [",
+                  "  \"staff_one_token\"",
+                  "]) {",
+                  "    if (!String(pm.environment.get(key) ?? '').trim()) {",
+                  "        pm.execution.skipRequest();",
+                  "        throw new Error('Missing environment variable; configure it or run its prerequisite: ' + key);",
+                  "    }",
+                  "}"
+                ]
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('HTTP 200', () => pm.response.to.have.status(200));",
+                  "if (pm.response.code === 200) pm.environment.unset('staff_one_token');"
+                ]
+              }
+            }
+          ],
+          "response": [
+            {
+              "name": "Illustrative - not API verified - Success",
+              "originalRequest": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{staff_one_token}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "url": "{{laravel_base_url}}/logout",
+                "description": "Revokes the current Sanctum bearer token. Login again for a new token.\n\nAll saved responses are illustrative, derived from source code, and have not been verified against a running API."
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"message\": \"Logged out successfully.\"\n}"
+            }
+          ]
+        },
+        {
+          "name": "Logout - Staff Two",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{staff_two_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "url": "{{laravel_base_url}}/logout",
+            "description": "Revokes the current Sanctum bearer token. Login again for a new token.\n\nAll saved responses are illustrative, derived from source code, and have not been verified against a running API."
+          },
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "for (const key of [",
+                  "  \"staff_two_token\"",
+                  "]) {",
+                  "    if (!String(pm.environment.get(key) ?? '').trim()) {",
+                  "        pm.execution.skipRequest();",
+                  "        throw new Error('Missing environment variable; configure it or run its prerequisite: ' + key);",
+                  "    }",
+                  "}"
+                ]
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('HTTP 200', () => pm.response.to.have.status(200));",
+                  "if (pm.response.code === 200) pm.environment.unset('staff_two_token');"
+                ]
+              }
+            }
+          ],
+          "response": [
+            {
+              "name": "Illustrative - not API verified - Success",
+              "originalRequest": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{staff_two_token}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "url": "{{laravel_base_url}}/logout",
+                "description": "Revokes the current Sanctum bearer token. Login again for a new token.\n\nAll saved responses are illustrative, derived from source code, and have not been verified against a running API."
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"message\": \"Logged out successfully.\"\n}"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

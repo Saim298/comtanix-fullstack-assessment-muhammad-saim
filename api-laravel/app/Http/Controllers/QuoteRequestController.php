@@ -62,7 +62,7 @@ class QuoteRequestController extends Controller
         $query = QuoteRequest::query()
             ->with('assignedUser:id,name,email');
 
-        if (!empty($filters['search'])) {
+        if (isset($filters['search']) && trim($filters['search']) !== '') {
             $search = trim($filters['search']);
 
             $query->where(function ($query) use ($search) {
@@ -80,9 +80,18 @@ class QuoteRequestController extends Controller
             $query->where('assigned_user_id', $filters['assigned_user_id']);
         }
 
-        if (!empty($filters['service_type'])) {
-            $query->where('service_type', $filters['service_type']);
+        if ($filters['unassigned'] ?? false) {
+            $query->whereNull('assigned_user_id');
         }
+
+
+        if (isset($filters['service_type']) && trim($filters['service_type']) !== '') {
+            $service = trim($filters['service_type']);
+            $service = addcslashes($service, '%_\\');
+
+            $query->where('service_type', 'like', "%{$service}%");
+        }
+
 
         $sortBy = $filters['sort_by'] ?? 'created_at';
         $direction = $filters['sort_direction'] ?? 'desc';
@@ -96,6 +105,22 @@ class QuoteRequestController extends Controller
         return QuoteRequestResource::collection(
             $query->paginate($filters['per_page'] ?? 20)->withQueryString()
         );
+    }
+
+
+    public function serviceTypes(): JsonResponse
+    {
+        Gate::authorize('viewAny', QuoteRequest::class);
+
+        $services = QuoteRequest::query()
+            ->select('service_type')
+            ->distinct()
+            ->orderBy('service_type')
+            ->pluck('service_type');
+
+        return response()->json([
+            'data' => $services
+        ]);
     }
 
     public function show(QuoteRequest $quoteRequest): QuoteRequestResource

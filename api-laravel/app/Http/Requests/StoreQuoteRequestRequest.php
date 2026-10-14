@@ -35,7 +35,10 @@ class StoreQuoteRequestRequest extends FormRequest
             'message' => ['required', 'string', 'min:10', 'max:5000'],
             'website' => ['prohibited'],
             'status' => ['prohibited'],
-            'assigned_user_id' => ['prohibited']
+            'assigned_user_id' => ['prohibited'],
+            'id' => ['prohibited'],
+            'created_at' => ['prohibited'],
+            'updated_at' => ['prohibited'],
         ];
     }
 }

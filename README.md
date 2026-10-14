@@ -14,7 +14,7 @@ It allows clients to submit quote requests, while Admin and Staff users can mana
 - MySQL
 - Node.js / Express
 - MongoDB
-- React / TypeScript
+- React / TypeScript / Tailwind CSS
 - Docker Compose
 
 ## 3. Project Structure

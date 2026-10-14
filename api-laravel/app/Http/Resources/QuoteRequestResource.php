@@ -24,6 +24,17 @@ class QuoteRequestResource extends JsonResource
             'message' => $this->message,
             'status' => $this->status,
             'assigned_user_id' => $this->assigned_user_id,
+            'assigned_user' => $this->whenLoaded('assignedUser', function () {
+                if (!$this->assignedUser) {
+                    return null;
+                }
+
+                return [
+                    'id' => $this->assignedUser->id,
+                    'name' => $this->assignedUser->name,
+                    'email' => $this->assignedUser->email
+                ];
+            }),
             'created_at' => $this->created_at?->toISOString(),
             'updated_at' => $this->updated_at?->toISOString()
         ];

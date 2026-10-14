@@ -2,32 +2,51 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\AssignQuoteRequestRequest;
+use App\Http\Requests\ListQuoteRequestsRequest;
 use App\Http\Requests\StoreQuoteRequestRequest;
+use App\Http\Requests\UpdateQuoteStatusRequest;
 use App\Http\Resources\QuoteRequestResource;
 use App\Models\QuoteRequest;
-use Illuminate\Http\JsonResponse;
-use App\Http\Requests\ListQuoteRequestsRequest;
-use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
-use Illuminate\Support\Facades\Gate;
-use App\Http\Requests\AssignQuoteRequestRequest;
-use App\Http\Requests\UpdateQuoteStatusRequest;
+use App\Services\AuditEventPublisher;
 use App\Services\QuoteAssignmentService;
 use App\Services\QuoteStatusService;
+use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
+use Illuminate\Http\Response;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Gate;
 
 class QuoteRequestController extends Controller
 {
-    public function store(StoreQuoteRequestRequest $request): JsonResponse
-    {
-        $quoteRequest = QuoteRequest::create(
-            $request->safe()->only([
-                'client_name',
-                'email',
-                'company',
-                'service_type',
-                'budget_range',
-                'message'
-            ])
-        );
+    public function store(
+        StoreQuoteRequestRequest $request,
+        AuditEventPublisher $audit
+    ): JsonResponse {
+        $quoteRequest = DB::transaction(function () use ($request, $audit): QuoteRequest {
+            $quote = QuoteRequest::create(
+                $request->safe()->only([
+                    'client_name',
+                    'email',
+                    'company',
+                    'service_type',
+                    'budget_range',
+                    'message',
+                ])
+            );
+
+            $audit->publish(
+                'quote.created',
+                $quote,
+                null,
+                [
+                    'serviceType' => $quote->service_type,
+                    'budgetRange' => $quote->budget_range,
+                ]
+            );
+
+            return $quote;
+        });
 
         return (new QuoteRequestResource($quoteRequest))
             ->response()
@@ -88,7 +107,6 @@ class QuoteRequestController extends Controller
         );
     }
 
-
     public function assign(
         AssignQuoteRequestRequest $request,
         QuoteRequest $quoteRequest,
@@ -117,8 +135,7 @@ class QuoteRequestController extends Controller
         return new QuoteRequestResource($quote);
     }
 
-
-    public function destroy(QuoteRequest $quoteRequest): \Illuminate\Http\Response
+    public function destroy(QuoteRequest $quoteRequest): Response
     {
         Gate::authorize('delete', $quoteRequest);
 
@@ -126,6 +143,4 @@ class QuoteRequestController extends Controller
 
         return response()->noContent();
     }
-
-
 }

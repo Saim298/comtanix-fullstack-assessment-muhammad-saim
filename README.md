@@ -507,6 +507,8 @@ It includes a public form where clients can submit quote requests without loggin
 
 Admin and Staff users have a separate dashboard where they can view and manage requests according to their permissions.
 
+The interface uses Tailwind CSS and the Poppins font, loaded through Google Fonts, with system-font fallbacks when the font cannot load.
+
 The dashboard supports searching, filtering, sorting, pagination, assignments, status updates, and audit history.
 
 ### 10.5 Communication Between Services

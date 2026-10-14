@@ -425,11 +425,17 @@ All commands should be run from the main project folder in separate terminals.
 
 ## 9. API Documentation
 
-The Postman collection for both the Laravel API and Node.js Audit Service is available here:
+The Postman collection covers the Laravel API and Node.js Audit Service.
 
-[Comtanix Postman Collection](docs/Comtanix.postman_collection.json)
+- [Postman Collection](docs/postman/Comtanix.postman_collection.json)
+- [Local Environment Template](docs/postman/Comtanix.local.postman_environment.json)
+- [Postman Setup and Review Guide](docs/postman/README.md)
 
-This collection contains API requests that can be used to test the application.
+Import the collection and environment into Postman, select the local environment, and configure your local credentials, URLs and audit secrets. Exported passwords and tokens are intentionally blank.
+
+Start the databases, Laravel API, Laravel queue worker and Node.js Audit Service before running requests. Follow the review guide for the workflow and optional requests.
+
+Saved response examples are illustrative and are not evidence of a live Postman run.
 
 ### 9.1 Importing the Postman Collection
 
